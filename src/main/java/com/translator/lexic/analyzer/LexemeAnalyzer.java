@@ -25,7 +25,7 @@ import static com.translator.lexic.util.RegexHolder.UNSIGNED_NUMBER_REGEX;
 public class LexemeAnalyzer {
 
     public LexemeAnalyzer(String programCode) {
-        this.programCode = programCode + " ";
+        this.programCode = programCode.replaceAll("\r","") + " ";
     }
 
     private final String programCode; //variable to store program code that should be processed
