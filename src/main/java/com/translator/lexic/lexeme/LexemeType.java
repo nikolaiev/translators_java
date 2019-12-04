@@ -1,7 +1,7 @@
-package com.translator.lexic.lexem;
+package com.translator.lexic.lexeme;
 
 
-public enum LexemType {
+public enum LexemeType {
     IDENTIFIER,
 
     NUMBER,

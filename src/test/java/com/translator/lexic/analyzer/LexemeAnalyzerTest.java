@@ -1,6 +1,6 @@
 package com.translator.lexic.analyzer;
 
-import com.translator.lexic.lexem.Lexem;
+import com.translator.lexic.lexeme.Lexeme;
 import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
@@ -16,12 +16,12 @@ import java.util.Map;
 
 import static java.lang.String.format;
 
-class LexemAnalyzerTest {
+class LexemeAnalyzerTest {
 
     @Test
     void analyzeCode() throws IOException {
         String programCode = getFileContentAsString("program_example.txt");
-        LexemAnalyzer analyzer = new LexemAnalyzer(programCode);
+        LexemeAnalyzer analyzer = new LexemeAnalyzer(programCode);
         analyzer.analyzeCode();
 
         System.out.println("Analyzing result");
@@ -34,38 +34,38 @@ class LexemAnalyzerTest {
         printLiterals(analyzer);
     }
 
-    private void printLiterals(LexemAnalyzer analyzer) {
+    private void printLiterals(LexemeAnalyzer analyzer) {
         System.out.println("-----------------------");
         System.out.printf("|%-10s|%-10s|\n", "value","code");
         System.out.println("-----------------------");
-        analyzer.getResultProgramLiteralLexems()
+        analyzer.getResultProgramLiteralLexemes()
             .forEach(literal->{
                 System.out.printf("|%-10s|%-10s|\n", literal.getValue(),analyzer.getLiteralIndex(literal));
             });
         System.out.println("-----------------------");
     }
 
-    private void printIdentifiers(LexemAnalyzer analyzer) {
+    private void printIdentifiers(LexemeAnalyzer analyzer) {
         System.out.println("-----------------------");
         System.out.printf("|%-10s|%-10s|\n", "value","code");
         System.out.println("-----------------------");
-        analyzer.getResultProgramIdentifierLexems()
+        analyzer.getResultProgramIdentifierLexemes()
             .forEach(identifier->{
                 System.out.printf("|%-10s|%-10s|\n", identifier.getValue(),analyzer.getIdentifierIndex(identifier));
             });
         System.out.println("-----------------------");
     }
 
-    private void printAllLexems (LexemAnalyzer analyzer) {
-        List<Lexem> lexemEtranceAmoun = analyzer.getResultProgramCodeLexems();
+    private void printAllLexems (LexemeAnalyzer analyzer) {
+        List<Lexeme> lexemeEtranceAmoun = analyzer.getResultProgramCodeLexemes();
         System.out.println("-----------------------------------------------------------------------------");
-        System.out.println(format("|%-10s|%-15s|%-8s|%-8s|%-15s|%-15s|", "Lexem", "type","code","line","index idetifier","index literal"));
+        System.out.println(format("|%-10s|%-15s|%-8s|%-8s|%-15s|%-15s|", "Lexeme", "type","code","line","index idetifier","index literal"));
         System.out.println("-----------------------------------------------------------------------------");
-        lexemEtranceAmoun.stream()
+        lexemeEtranceAmoun.stream()
             .forEach(lexem -> {
                 System.out.println(format("|%-10s|%-15s|%-8s|%-8s|%-15s|%-15s|",
                     lexem.getValue().replace("\n", "\\n"),
-                    lexem.getType(), lexem.getLexemCode(), lexem.getLineIndex(),
+                    lexem.getType(), lexem.getCode(), lexem.getLineIndex(),
                     emptyIfLessThanZero(analyzer.getIdentifierIndex(lexem)),
                     emptyIfLessThanZero(analyzer.getLiteralIndex(lexem))));
             });
@@ -79,9 +79,9 @@ class LexemAnalyzerTest {
         return String.valueOf(i);
     }
 
-    private Map<Lexem, Integer> getLexemEntranceAmountMap(List<Lexem> resultProgramCodeLexems) {
-        Map<Lexem, Integer> resultMap = new HashMap<>();
-        resultProgramCodeLexems.forEach(lexem -> {
+    private Map<Lexeme, Integer> getLexemEntranceAmountMap(List<Lexeme> resultProgramCodeLexemes) {
+        Map<Lexeme, Integer> resultMap = new HashMap<>();
+        resultProgramCodeLexemes.forEach(lexem -> {
             Integer previousValue = resultMap.get(lexem);
             resultMap.put(lexem, previousValue == null ? 1 : previousValue + 1);
         });
@@ -89,7 +89,7 @@ class LexemAnalyzerTest {
     }
 
     private static String getFileContentAsString(String fileName) throws IOException {
-        InputStream resourceAsStream = LexemAnalyzerTest.class.getClassLoader().getResourceAsStream(fileName);
+        InputStream resourceAsStream = LexemeAnalyzerTest.class.getClassLoader().getResourceAsStream(fileName);
         StringBuilder textBuilder = new StringBuilder();
         try (Reader reader = new BufferedReader(new InputStreamReader
             (resourceAsStream, Charset.forName(StandardCharsets.UTF_8.name())))) {

@@ -1,9 +1,9 @@
 package com.translator.lexic.analyzer;
 
 import com.translator.lexic.exception.UnexpectedLexemException;
-import com.translator.lexic.lexem.Lexem;
-import com.translator.lexic.lexem.LexemType;
-import com.translator.lexic.util.LexemVerifier;
+import com.translator.lexic.lexeme.Lexeme;
+import com.translator.lexic.lexeme.LexemeType;
+import com.translator.lexic.util.LexemValidator;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,50 +11,50 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
-import static com.translator.lexic.lexem.LexemType.BOOL;
-import static com.translator.lexic.lexem.LexemType.IDENTIFIER;
-import static com.translator.lexic.lexem.LexemType.NUMBER;
-import static com.translator.lexic.lexem.LexemType.STRING;
-import static com.translator.lexic.lexem.ReservedLexem.RESERVED_LEXEMS;
+import static com.translator.lexic.lexeme.LexemeType.BOOL;
+import static com.translator.lexic.lexeme.LexemeType.IDENTIFIER;
+import static com.translator.lexic.lexeme.LexemeType.NUMBER;
+import static com.translator.lexic.lexeme.LexemeType.STRING;
+import static com.translator.lexic.lexeme.ReservedLexem.RESERVED_LEXEMS;
 import static com.translator.lexic.util.RegexHolder.IDENTIFIER_REGEX;
 import static com.translator.lexic.util.RegexHolder.STRING_REGEX;
 import static com.translator.lexic.util.RegexHolder.UNSIGNED_NUMBER_REGEX;
 
 @Data
 @Slf4j
-public class LexemAnalyzer {
+public class LexemeAnalyzer {
 
-    public LexemAnalyzer(String programCode) {
+    public LexemeAnalyzer(String programCode) {
         this.programCode = programCode + " ";
     }
 
     private final String programCode; //variable to store program code that should be processed
 
-    private String lexemBufferValue = ""; //variable to store temporary parts of program code, before lexem is founded
+    private String lexemBufferValue = ""; //variable to store temporary parts of program code, before loopLexeme is founded
     private int charIndex = 0; //current position of character that are being read by Analyzer
     private int lineIndex = 1; //current position of line that are being read by Analyzer
-    private LinkedList<Lexem> resultProgramCodeLexems = new LinkedList<>(); //list of result lexems
-    private LinkedHashSet<Lexem> resultProgramIdentifierLexems = new LinkedHashSet<>(); //list of result lexems
-    private LinkedHashSet<Lexem> resultProgramLiteralLexems = new LinkedHashSet<>(); //list of result lexems
+    private LinkedList<Lexeme> resultProgramCodeLexemes = new LinkedList<>(); //list of result lexems
+    private LinkedHashSet<Lexeme> resultProgramIdentifierLexemes = new LinkedHashSet<>(); //list of result lexems
+    private LinkedHashSet<Lexeme> resultProgramLiteralLexemes = new LinkedHashSet<>(); //list of result lexems
 
     public void analyzeCode() {
         try {
             log.info("Analyzing code \n {} \n", programCode);
             while (charIndex < programCode.length()) {
-                Lexem lexem = getNextLexemIfPossible();
-                if (lexem != null) {
+                Lexeme lexeme = getNextLexemIfPossible();
+                if (lexeme != null) {
 
-                    LexemVerifier.verify(lexem);
+                    LexemValidator.verify(lexeme);
 
-                    addLexemToResultList(lexem);
+                    addLexemToResultList(lexeme);
 
-                    LexemType lexemType = lexem.getType();
-                    if (lexemType.equals(IDENTIFIER)) {
-                        addLexemToResultIdentifierSet(lexem);
-                    } else if (lexemType.equals(NUMBER)
-                        || lexemType.equals(BOOL)
-                        || lexemType.equals(STRING)) {
-                        addLexemToResultLiteralSet(lexem);
+                    LexemeType lexemeType = lexeme.getType();
+                    if (lexemeType.equals(IDENTIFIER)) {
+                        addLexemToResultIdentifierSet(lexeme);
+                    } else if (lexemeType.equals(NUMBER)
+                        || lexemeType.equals(BOOL)
+                        || lexemeType.equals(STRING)) {
+                        addLexemToResultLiteralSet(lexeme);
                     }
                 }
             }
@@ -67,20 +67,20 @@ public class LexemAnalyzer {
         }
     }
 
-    public int getIdentifierIndex(Lexem lexem) {
-        return new ArrayList<>(resultProgramIdentifierLexems).indexOf(lexem);
+    public int getIdentifierIndex(Lexeme lexeme) {
+        return new ArrayList<>(resultProgramIdentifierLexemes).indexOf(lexeme);
     }
 
-    public int getLiteralIndex(Lexem lexem) {
-        return new ArrayList<>(resultProgramLiteralLexems).indexOf(lexem);
+    public int getLiteralIndex(Lexeme lexeme) {
+        return new ArrayList<>(resultProgramLiteralLexemes).indexOf(lexeme);
     }
 
-    private Lexem getNextLexemIfPossible() {
+    private Lexeme getNextLexemIfPossible() {
         appendLexemBufferValueWithNextSymbol();
 
         if (checkIfKeywordStartsWith()) { //check if buffer matches any reserved keyword
             //since we can have REL_OP like "==" we need to perform this while to prevent having two "=""=" instead of one "=="
-            //for keywords like program this loop is useless, since neither "p" nor "pr" is not a reserved lexem (only "program")
+            //for keywords like program this loop is useless, since neither "p" nor "pr" is not a reserved loopLexeme (only "program")
             while (appendLexemBufferValueWithNextSymbol() && checkIfKeywordStartsWith()) ;
             //check if buffer is not identifier that starts with part of of whole reserved keyword
             if (!checkMatchesIdentifier()) {
@@ -90,8 +90,8 @@ public class LexemAnalyzer {
                     if (possiblyReservedKeyword.equals("\n")) {
                         lineIndex++;
                     }
-                    LexemType lexemType = RESERVED_LEXEMS.get(possiblyReservedKeyword);
-                    return getNewLexem(possiblyReservedKeyword, lexemType);
+                    LexemeType lexemeType = RESERVED_LEXEMS.get(possiblyReservedKeyword);
+                    return getNewLexem(possiblyReservedKeyword, lexemeType);
                 } else {
                     //possiblyReservedKeyword is actually not reserved keyword
                     lexemBufferValue = possiblyReservedKeyword;
@@ -103,8 +103,8 @@ public class LexemAnalyzer {
             while (appendLexemBufferValueWithNextSymbol() && checkMatchesIdentifier()) ;
             String lexemValue = getBufferAndClearAndDecreaseCharIdex();
             //since "true" or "false" can be considered as identifier - check with to set proper type
-            LexemType lexemType = getTypeIdentifierOrBool(lexemValue);
-            return getNewLexem(lexemValue, lexemType);
+            LexemeType lexemeType = getTypeIdentifierOrBool(lexemValue);
+            return getNewLexem(lexemValue, lexemeType);
 
         }
 
@@ -123,8 +123,8 @@ public class LexemAnalyzer {
         return null;
     }
 
-    private Lexem getNewLexem(String reservedKeyword, LexemType lexemType) {
-        return Lexem.of(reservedKeyword, lexemType, lineIndex);
+    private Lexeme getNewLexem(String reservedKeyword, LexemeType lexemeType) {
+        return Lexeme.of(reservedKeyword, lexemeType, lineIndex);
     }
 
     private String getBufferAndClearAndDecreaseCharIdex() {
@@ -166,21 +166,21 @@ public class LexemAnalyzer {
         return false;
     }
 
-    private LexemType getTypeIdentifierOrBool(String lexemValue) {
+    private LexemeType getTypeIdentifierOrBool(String lexemValue) {
         return "true".equals(lexemValue) || "false".equals(lexemValue)
             ? BOOL
             : IDENTIFIER;
     }
 
-    private void addLexemToResultList(Lexem lexem) {
-        resultProgramCodeLexems.add(lexem);
+    private void addLexemToResultList(Lexeme lexeme) {
+        resultProgramCodeLexemes.add(lexeme);
     }
 
-    private void addLexemToResultIdentifierSet(Lexem lexem) {
-        resultProgramIdentifierLexems.add(lexem);
+    private void addLexemToResultIdentifierSet(Lexeme lexeme) {
+        resultProgramIdentifierLexemes.add(lexeme);
     }
 
-    private void addLexemToResultLiteralSet(Lexem lexem) {
-        resultProgramLiteralLexems.add(lexem);
+    private void addLexemToResultLiteralSet(Lexeme lexeme) {
+        resultProgramLiteralLexemes.add(lexeme);
     }
 }
