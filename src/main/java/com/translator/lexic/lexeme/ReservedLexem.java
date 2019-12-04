@@ -67,5 +67,6 @@ public class ReservedLexem {
         put(" ", WHITE);
         put("\n", WHITE);
         put("\t", WHITE);
+        put("\r", WHITE);
     }};
 }

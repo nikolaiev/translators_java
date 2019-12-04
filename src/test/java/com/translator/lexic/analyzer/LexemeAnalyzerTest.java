@@ -36,35 +36,38 @@ class LexemeAnalyzerTest {
 
     private void printLiterals(LexemeAnalyzer analyzer) {
         System.out.println("-----------------------");
-        System.out.printf("|%-10s|%-10s|\n", "value","code");
+        System.out.printf("|%-10s|%-10s|\n", "value", "code");
         System.out.println("-----------------------");
         analyzer.getResultProgramLiteralLexemes()
-            .forEach(literal->{
-                System.out.printf("|%-10s|%-10s|\n", literal.getValue(),analyzer.getLiteralIndex(literal));
+            .forEach(literal -> {
+                System.out.printf("|%-10s|%-10s|\n", literal.getValue(), analyzer.getLiteralIndex(literal));
             });
         System.out.println("-----------------------");
     }
 
     private void printIdentifiers(LexemeAnalyzer analyzer) {
         System.out.println("-----------------------");
-        System.out.printf("|%-10s|%-10s|\n", "value","code");
+        System.out.printf("|%-10s|%-10s|\n", "value", "code");
         System.out.println("-----------------------");
         analyzer.getResultProgramIdentifierLexemes()
-            .forEach(identifier->{
-                System.out.printf("|%-10s|%-10s|\n", identifier.getValue(),analyzer.getIdentifierIndex(identifier));
+            .forEach(identifier -> {
+                System.out.printf("|%-10s|%-10s|\n", identifier.getValue(), analyzer.getIdentifierIndex(identifier));
             });
         System.out.println("-----------------------");
     }
 
-    private void printAllLexems (LexemeAnalyzer analyzer) {
+    private void printAllLexems(LexemeAnalyzer analyzer) {
         List<Lexeme> lexemeEtranceAmoun = analyzer.getResultProgramCodeLexemes();
         System.out.println("-----------------------------------------------------------------------------");
-        System.out.println(format("|%-10s|%-15s|%-8s|%-8s|%-15s|%-15s|", "Lexeme", "type","code","line","index idetifier","index literal"));
+        System.out.println(format("|%-10s|%-15s|%-8s|%-8s|%-15s|%-15s|", "Lexeme", "type", "code", "line", "index idetifier", "index literal"));
         System.out.println("-----------------------------------------------------------------------------");
         lexemeEtranceAmoun.stream()
             .forEach(lexem -> {
                 System.out.println(format("|%-10s|%-15s|%-8s|%-8s|%-15s|%-15s|",
-                    lexem.getValue().replace("\n", "\\n"),
+                    lexem.getValue()
+                        .replace("\n", "\\n")
+                        .replace("\r", "\\r")
+                        .replace("\t", "\\t"),
                     lexem.getType(), lexem.getCode(), lexem.getLineIndex(),
                     emptyIfLessThanZero(analyzer.getIdentifierIndex(lexem)),
                     emptyIfLessThanZero(analyzer.getLiteralIndex(lexem))));
@@ -72,8 +75,8 @@ class LexemeAnalyzerTest {
         System.out.println("-----------------------------------------------------------------------------");
     }
 
-    private String emptyIfLessThanZero(int i){
-        if(i<0){
+    private String emptyIfLessThanZero(int i) {
+        if (i < 0) {
             return "";
         }
         return String.valueOf(i);
