@@ -8,10 +8,13 @@ import java.util.LinkedList;
 public class StatementList extends SyntaxUnit {
 
     public StatementList(){
+        this.setName("StatementList");
+
         this.setExactSyntax(new LinkedList<>(){{
-            add(new Statement());
+            add(Statement.getInstance());
         }});
 
         this.setLoopLexeme(Lexeme.of(";"));
+        this.setLoopMandatory(false);
     }
 }

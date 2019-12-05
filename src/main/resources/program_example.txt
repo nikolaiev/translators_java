@@ -1,7 +1,20 @@
 program Julia
-var
-a1,d3 ,#5fs:int;
-a4,d3 ,#5fs:float;
+
+var a1,b3:int;
+r4,ty5:bool;
 {
-;
+    a2=2;
+    a2=2;
+    a2=2;
+    go(d1,e3);
+    out(d1,e3);
+    out(2+2);
+    out(2+2*(3-1));
+
+    c1='Privet ';
+
+    repeat{
+        a2=2;
+        go(d1,e3);
+    } until a>=1;
 }

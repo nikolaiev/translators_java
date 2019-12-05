@@ -19,6 +19,7 @@ str1:string
     b1=(a1^#d)/(#b)
 
     str = 'Hello World!'
+    str = true;
 
     out(b1)
     out(str1)

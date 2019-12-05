@@ -6,5 +6,6 @@ public class Identifier extends SyntaxUnit {
 
     public Identifier() {
         super(LexemeType.IDENTIFIER);
+        this.setName("Identifier");
     }
 }

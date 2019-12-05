@@ -25,6 +25,7 @@ import static com.translator.lexic.util.RegexHolder.UNSIGNED_NUMBER_REGEX;
 public class LexemeAnalyzer {
 
     public LexemeAnalyzer(String programCode) {
+        //linux format files on windows clrl vs lr
         this.programCode = programCode.replaceAll("\r","") + " ";
     }
 
