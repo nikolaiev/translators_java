@@ -1,6 +1,5 @@
 package com.translator.lexic.syntax.units.declaration;
 
-import com.translator.lexic.syntax.units.ReservedKeyword;
 import com.translator.lexic.syntax.units.SyntaxUnit;
 
 import java.util.LinkedList;

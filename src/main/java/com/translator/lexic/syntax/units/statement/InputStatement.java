@@ -1,6 +1,6 @@
 package com.translator.lexic.syntax.units.statement;
 
-import com.translator.lexic.syntax.units.ReservedKeyword;
+import com.translator.lexic.syntax.units.declaration.ReservedKeyword;
 import com.translator.lexic.syntax.units.SyntaxUnit;
 import com.translator.lexic.syntax.units.declaration.IdentifiersList;
 
@@ -12,7 +12,7 @@ public class InputStatement extends SyntaxUnit {
         this.setName("InputStatement");
 
         this.setExactSyntax(new LinkedList<>() {{
-            add(new ReservedKeyword("go"));
+            add(new ReservedKeyword("in"));
             add(new ReservedKeyword("("));
             add(new IdentifiersList());
             add(new ReservedKeyword(")"));

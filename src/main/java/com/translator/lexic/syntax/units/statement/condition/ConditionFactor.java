@@ -1,45 +1,41 @@
 package com.translator.lexic.syntax.units.statement.condition;
 
-import com.translator.lexic.syntax.units.ReservedKeyword;
+import com.translator.lexic.syntax.units.declaration.ReservedKeyword;
 import com.translator.lexic.syntax.units.SyntaxUnit;
-import com.translator.lexic.syntax.units.statement.expression.Factor;
+import com.translator.lexic.syntax.units.statement.expression.BoolExpression;
 import lombok.Data;
 
 import java.util.LinkedList;
 
-//since Term contains itself we can get StackOverFlow exception. That is why we need SINGLETON
 @Data
 public class ConditionFactor extends SyntaxUnit {
 
     private static ConditionFactor INSTANCE = new ConditionFactor();
+
     static {
         INSTANCE.init();
     }
 
-    public static ConditionFactor getInstance(){
+    public static ConditionFactor getInstance() {
         return INSTANCE;
     }
 
-    private ConditionFactor(){}
+    private ConditionFactor() {
+    }
 
     private void init() {
-        this.setName("Term");
+        this.setName("ConditionFactor");
 
         this.setSyntaxOptions(new LinkedList<>() {{
+            add(BoolExpression.getInstance());
             add(new SyntaxUnit() {{
-                this.setExactSyntax(new LinkedList<>() {{
-                    add(Factor.getInstance());
-                    add(new SyntaxUnit() {{  // {*,/,^}
-                        this.setSyntaxOptions(new LinkedList<>() {{
-                            add(new ReservedKeyword("*"));
-                            add(new ReservedKeyword("/"));
-                            add(new ReservedKeyword("^"));
-                        }});
-                    }});
-                    add(ConditionFactor.getInstance());
+                this.setExactSyntax(new LinkedList<>(){{
+                    add(new ReservedKeyword("("));
+                    add(Condition.getInstance());
+                    add(new ReservedKeyword(")"));
                 }});
             }});
-            add(Factor.getInstance());
+            add(Condition.getInstance());
         }});
     }
 }

@@ -1,8 +1,8 @@
 package com.translator.lexic.syntax.units;
 
+import com.translator.lexic.lexeme.model.Lexeme;
+import com.translator.lexic.lexeme.model.LexemeType;
 import com.translator.lexic.syntax.exception.SyntaxAnalyzerException;
-import com.translator.lexic.lexeme.Lexeme;
-import com.translator.lexic.lexeme.LexemeType;
 import lombok.Data;
 
 import java.util.Collection;
@@ -19,14 +19,13 @@ import static java.util.stream.Collectors.toList;
 @Data
 public abstract class SyntaxUnit {
 
-//    public static int formatterInt = 0;
-    public static LinkedList<String> errors = new LinkedList<>();
-    private String name = "---";
-    private Lexeme lexeme;
-    private LexemeType lexemeType;
-    private LinkedList<SyntaxUnit> exactSyntax;
-    private LinkedList<SyntaxUnit> syntaxOptions;
-    private Lexeme loopLexeme; //if SynatUnit is looped
+    public static int formatterInt = 0;
+    private String name = "---"; //can be overwritten by any implementor
+    private Lexeme lexeme; //is set if SyntaxUnit is exact lexem
+    private LexemeType lexemeType; //is set if SyntaxUnit is exact lexem Type
+    private LinkedList<SyntaxUnit> exactSyntax; //is set if SyntaxUnit is defined mandatory sequence of other SyntaxUnit
+    private LinkedList<SyntaxUnit> syntaxOptions; //is set if SyntaxUnit is defined optional cases of other SyntaxUnit
+    private Lexeme loopLexeme; //if SynatUnit is looped (like StatementList is loop on Statement by ';' symbol)
     private boolean isLoopMandatory = true;
 
     public SyntaxUnit() {
@@ -41,52 +40,60 @@ public abstract class SyntaxUnit {
     }
 
     public void validateSyntax(LinkedList<Lexeme> resultProgramCodeLexemes) {
-//        System.out.println(resultProgramCodeLexemes);
-//        for (int i = 0; i < formatterInt; i++) {
-//            System.out.print(" ");
-//        }
-//        System.out.println("->" + this.getName());
-        int sizeBefore = resultProgramCodeLexemes.size();
         try {
+            //TODO uncomment if you want real time Syntax Analyzer logs
+//            System.out.println(resultProgramCodeLexemes.stream().map(l -> l.getValue()).collect(Collectors.toList()));
+//            for (int i = 0; i < formatterInt; i++) {
+//                System.out.print(" ");
+//            }
+//            System.out.println("->" + this.getName());
+            int sizeBefore = resultProgramCodeLexemes.size();
+
             if (lexemeType != null) {
                 validateLexemeType(resultProgramCodeLexemes);
             } else if (lexeme != null) {
                 validateLexeme(resultProgramCodeLexemes);
             } else if (exactSyntax != null) {
-//                formatterInt += 2;
+                formatterInt += 2;
                 validateExactSyntax(resultProgramCodeLexemes);
-//                formatterInt -= 2;
+                formatterInt -= 2;
             } else if (syntaxOptions != null) {
-//                formatterInt += 2;
+                formatterInt += 2;
                 validateOptionsSyntax(resultProgramCodeLexemes);
-//                formatterInt -= 2;
+                formatterInt -= 2;
             }
 
-            //recursion
-            if (loopLexeme != null) {
-                if (loopLexeme.equals(resultProgramCodeLexemes.getFirst())) {
-                    if (isLoopMandatory) {
-                        resultProgramCodeLexemes.removeFirst();
-                        this.validateSyntax(resultProgramCodeLexemes);
-                    } else {
-                        LinkedList<Lexeme> lexemesCopy = new LinkedList<>(resultProgramCodeLexemes);
-                        lexemesCopy.removeFirst();
-                        try {
-                            this.validateSyntax(lexemesCopy);
-                        } catch (SyntaxAnalyzerException ignored) {
-                            //loop ended since it's not mandatory
-                            return;
-                        }
-                        alignListsSize(resultProgramCodeLexemes, lexemesCopy);
+            throwExceptionIfNothingWereFound(resultProgramCodeLexemes, sizeBefore);
+
+            if (loopLexeme != null &&
+                loopLexeme.equals(resultProgramCodeLexemes.getFirst())) {
+                if (isLoopMandatory) {
+                    resultProgramCodeLexemes.removeFirst();
+                    this.validateSyntax(resultProgramCodeLexemes);
+                } else {
+                    LinkedList<Lexeme> lexemesCopy = new LinkedList<>(resultProgramCodeLexemes);
+                    lexemesCopy.removeFirst();
+                    try {
+                        this.validateSyntax(lexemesCopy);
+                    } catch (SyntaxAnalyzerException exception) {
+                        //loop ended since it's not mandatory
+                        saveSyntaxErrorState(exception, new LinkedList<>(lexemesCopy));
+                        return;
                     }
+                    alignListsSize(resultProgramCodeLexemes, lexemesCopy);
                 }
-            }else {
-                //throw exception if nothing was validated
-                assertLexemesWereProceed(resultProgramCodeLexemes, sizeBefore);
             }
         } catch (NoSuchElementException e) { //if resultProgramCodeLexemes will be empty
             throw new SyntaxAnalyzerException("Reached out of lexems", e);
+        } catch (SyntaxAnalyzerException e){
+            saveSyntaxErrorState(e, new LinkedList<>(resultProgramCodeLexemes));
+            throw e;
         }
+
+    }
+
+    private void saveSyntaxErrorState(SyntaxAnalyzerException exception, LinkedList<Lexeme> lexemes) {
+        ProgramSyntaxStructureTree.saveSyntaxErrorState(exception, lexemes.size());
     }
 
     private void alignListsSize(LinkedList<Lexeme> resultProgramCodeLexemes, LinkedList<Lexeme> lexemesCopy) {
@@ -131,11 +138,10 @@ public abstract class SyntaxUnit {
             try {
                 option.validateSyntax(lexemesCopy);
             } catch (SyntaxAnalyzerException e) { //option did not match
-                if(resultProgramCodeLexemes.size()==0
-                    && e.getMessage()!="Reached out of lexems"){
-                    errors.addFirst(e.getMessage());
+                if (resultProgramCodeLexemes.size() == 0
+                    && !e.getMessage().equals("Reached out of lexems")) {
+                    saveSyntaxErrorState(e, lexemesCopy);
                 }
-                //System.out.println(e.getMessage());
                 continue;
             }
             //option did match
@@ -144,11 +150,11 @@ public abstract class SyntaxUnit {
         }
     }
 
-    private void assertLexemesWereProceed(LinkedList<Lexeme> resultProgramCodeLexemes, int sizeBefore) {
+    private void throwExceptionIfNothingWereFound(LinkedList<Lexeme> resultProgramCodeLexemes, int sizeBefore) {
         //check main list was updated since at least one option should have been applied
         int sizeAfter = resultProgramCodeLexemes.size();
         if (sizeBefore <= sizeAfter) {
-            if(sizeAfter!=0) {
+            if (sizeAfter != 0) {
                 Lexeme first = resultProgramCodeLexemes.getFirst();
                 throw new SyntaxAnalyzerException(format("Syntax error. Expected one of %s, but found %s at line %s",
                     getReadableOptionsList(), first, first.getLineIndex()));
@@ -158,7 +164,7 @@ public abstract class SyntaxUnit {
         }
     }
 
-    public List<Object> getReadableOptionsList() {
+    private List<Object> getReadableOptionsList() {
         return this.getSyntaxOptions()
             .stream()
             .map(option -> {
@@ -170,12 +176,12 @@ public abstract class SyntaxUnit {
                     }
                     if (option.exactSyntax != null) {
                         return option.exactSyntax.stream().map(SyntaxUnit::getName)
-                            .filter(n->!n.equals("---"))
+                            .filter(n -> !n.equals("---"))
                             .collect(Collectors.toList());
                     }
                     if (option.syntaxOptions != null) {
                         return option.syntaxOptions.stream().map(SyntaxUnit::getName)
-                            .filter(n->!n.equals("---"))
+                            .filter(n -> !n.equals("---"))
                             .collect(Collectors.toList());
                     }
                     return Collections.emptyList();

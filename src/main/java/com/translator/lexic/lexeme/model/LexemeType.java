@@ -1,4 +1,4 @@
-package com.translator.lexic.lexeme;
+package com.translator.lexic.lexeme.model;
 
 
 public enum LexemeType {

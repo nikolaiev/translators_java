@@ -1,8 +1,8 @@
 package com.translator.lexic.syntax.units.statement;
 
-import com.translator.lexic.lexeme.LexemeType;
-import com.translator.lexic.syntax.units.Identifier;
-import com.translator.lexic.syntax.units.ReservedKeyword;
+import com.translator.lexic.lexeme.model.LexemeType;
+import com.translator.lexic.syntax.units.declaration.Identifier;
+import com.translator.lexic.syntax.units.declaration.ReservedKeyword;
 import com.translator.lexic.syntax.units.SyntaxUnit;
 import com.translator.lexic.syntax.units.statement.expression.Expression;
 
@@ -18,7 +18,6 @@ public class AssignStatement extends SyntaxUnit {
             add(new ReservedKeyword("="));
             add(new SyntaxUnit() {{
                     this.setSyntaxOptions(new LinkedList<>() {{
-
                         add(new SyntaxUnit() {{
                             this.setLexemeType(LexemeType.STRING);
                         }});

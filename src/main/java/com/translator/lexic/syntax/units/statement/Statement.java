@@ -26,6 +26,7 @@ public class Statement extends SyntaxUnit {
             add(new InputStatement());
             add(new OutputStatement());
             add(new LoopStatement());
+            add(new ConditionStatement());
         }});
     }
 }

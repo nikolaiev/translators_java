@@ -6,15 +6,30 @@ r4,ty5:bool;
     a2=2;
     a2=2;
     a2=2;
-    go(d1,e3);
+    in(d1,e3);
     out(d1,e3);
     out(2+2);
-    out(2+2*(3-1));
+    out(2+2*(3-1)^2);
+
+    in(a);
 
     c1='Privet ';
 
     repeat{
         a2=2;
-        go(d1,e3);
-    } until a>=1;
+        in(d1,e3);
+    } until (!a>=4);
+
+    if (w<=3 && (e>=6 || true)) then {
+        a=2;
+        in(b);
+    } fi;
+
+    if ((a>2 && d<6) || !(2>4 && !v<=f )) then
+        a=2;
+    fi;
+
+    if ((a>2 || true )) then
+            a=2;
+        fi;
 }

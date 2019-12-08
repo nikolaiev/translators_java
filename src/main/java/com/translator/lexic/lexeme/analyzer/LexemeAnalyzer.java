@@ -1,8 +1,8 @@
-package com.translator.lexic.analyzer;
+package com.translator.lexic.lexeme.analyzer;
 
+import com.translator.lexic.lexeme.model.Lexeme;
+import com.translator.lexic.lexeme.model.LexemeType;
 import com.translator.lexic.lexeme.exception.UnexpectedLexemException;
-import com.translator.lexic.lexeme.Lexeme;
-import com.translator.lexic.lexeme.LexemeType;
 import com.translator.lexic.lexeme.util.LexemValidator;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -11,16 +11,14 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
-import static com.translator.lexic.lexeme.LexemeType.BOOL;
-import static com.translator.lexic.lexeme.LexemeType.IDENTIFIER;
-import static com.translator.lexic.lexeme.LexemeType.NUMBER;
-import static com.translator.lexic.lexeme.LexemeType.STRING;
-import static com.translator.lexic.lexeme.ReservedLexem.RESERVED_LEXEMS;
-import static com.translator.lexic.lexeme.util.LexemValidator.verifyBuffer;
+import static com.translator.lexic.lexeme.model.LexemeType.BOOL;
+import static com.translator.lexic.lexeme.model.LexemeType.IDENTIFIER;
+import static com.translator.lexic.lexeme.model.LexemeType.NUMBER;
+import static com.translator.lexic.lexeme.model.LexemeType.STRING;
+import static com.translator.lexic.lexeme.model.ReservedLexem.RESERVED_LEXEMS;
 import static com.translator.lexic.lexeme.util.RegexHolder.IDENTIFIER_REGEX;
 import static com.translator.lexic.lexeme.util.RegexHolder.STRING_REGEX;
 import static com.translator.lexic.lexeme.util.RegexHolder.UNSIGNED_NUMBER_REGEX;
-import static java.lang.String.format;
 
 @Data
 @Slf4j
@@ -28,7 +26,7 @@ public class LexemeAnalyzer {
 
     public LexemeAnalyzer(String programCode) {
         //linux format files on windows clrl vs lr
-        this.programCode = programCode.replaceAll("\r","") + " ";
+        this.programCode = programCode.replaceAll("\r", "") + " ";
     }
 
     private final String programCode; //variable to store program code that should be processed
@@ -47,7 +45,7 @@ public class LexemeAnalyzer {
                 Lexeme lexeme = getNextLexemIfPossible();
                 if (lexeme != null) {
 
-                    LexemValidator.verifyLexem(lexeme);
+                    LexemValidator.verifyLexeme(lexeme);
 
                     addLexemToResultList(lexeme);
 
@@ -68,7 +66,7 @@ public class LexemeAnalyzer {
             log.error("Exception {}", e.getMessage());
             log.error("charIndex {}, buffer {}", charIndex, lexemBufferValue);
         }
-        if(!lexemBufferValue.trim().isEmpty()){
+        if (!lexemBufferValue.trim().isEmpty()) {
             throw new UnexpectedLexemException("Program code was not totally parsed : " + lexemBufferValue);
         }
     }
@@ -125,8 +123,6 @@ public class LexemeAnalyzer {
             String stringLexem = getBufferAndClearAndDecreaseCharIdex();
             return getNewLexem(stringLexem, STRING);
         }
-
-        verifyBuffer(lexemBufferValue, charIndex, lineIndex);
 
         return null;
     }

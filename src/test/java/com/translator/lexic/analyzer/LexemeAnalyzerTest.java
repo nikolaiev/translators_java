@@ -1,6 +1,7 @@
 package com.translator.lexic.analyzer;
 
-import com.translator.lexic.lexeme.Lexeme;
+import com.translator.lexic.lexeme.model.Lexeme;
+import com.translator.lexic.lexeme.analyzer.LexemeAnalyzer;
 import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
@@ -10,9 +11,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static java.lang.String.format;
 
@@ -61,7 +60,7 @@ class LexemeAnalyzerTest {
         System.out.println("-----------------------------------------------------------------------------");
         System.out.println(format("|%-10s|%-15s|%-8s|%-8s|%-15s|%-15s|", "Lexeme", "type", "code", "line", "index idetifier", "index literal"));
         System.out.println("-----------------------------------------------------------------------------");
-        lexemeEtranceAmoun.stream()
+        lexemeEtranceAmoun
             .forEach(lexem -> {
                 System.out.println(format("|%-10s|%-15s|%-8s|%-8s|%-15s|%-15s|",
                     lexem.getValue()
@@ -81,15 +80,6 @@ class LexemeAnalyzerTest {
             return "";
         }
         return String.valueOf(i);
-    }
-
-    private Map<Lexeme, Integer> getLexemEntranceAmountMap(List<Lexeme> resultProgramCodeLexemes) {
-        Map<Lexeme, Integer> resultMap = new HashMap<>();
-        resultProgramCodeLexemes.forEach(lexem -> {
-            Integer previousValue = resultMap.get(lexem);
-            resultMap.put(lexem, previousValue == null ? 1 : previousValue + 1);
-        });
-        return resultMap;
     }
 
     private static String getFileContentAsString(String fileName) throws IOException {

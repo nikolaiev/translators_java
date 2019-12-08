@@ -1,8 +1,7 @@
 package com.translator.lexic.syntax.units.statement.condition;
 
-import com.translator.lexic.syntax.units.ReservedKeyword;
+import com.translator.lexic.syntax.units.declaration.ReservedKeyword;
 import com.translator.lexic.syntax.units.SyntaxUnit;
-import com.translator.lexic.syntax.units.statement.expression.Factor;
 import lombok.Data;
 
 import java.util.LinkedList;
@@ -23,23 +22,24 @@ public class Condition extends SyntaxUnit {
     private Condition(){}
 
     private void init() {
-        this.setName("Term");
+        this.setName("Condition");
 
         this.setSyntaxOptions(new LinkedList<>() {{
             add(new SyntaxUnit() {{
-                this.setExactSyntax(new LinkedList<>() {{
-                    add(Factor.getInstance());
-                    add(new SyntaxUnit() {{  // {*,/,^}
-                        this.setSyntaxOptions(new LinkedList<>() {{
-                            add(new ReservedKeyword("*"));
-                            add(new ReservedKeyword("/"));
-                            add(new ReservedKeyword("^"));
-                        }});
-                    }});
+                this.setExactSyntax(new LinkedList<>(){{
+                    add(new ReservedKeyword("!"));
+                    add(ConditionTerm.getInstance());
+                }});
+            }
+            });
+            add(new SyntaxUnit() {{
+                this.setExactSyntax(new LinkedList<>(){{
+                    add(ConditionTerm.getInstance());
+                    add(new ReservedKeyword("||"));
                     add(Condition.getInstance());
                 }});
             }});
-            add(Factor.getInstance());
+            add(ConditionTerm.getInstance());
         }});
     }
 }

@@ -1,14 +1,14 @@
-package com.translator.lexic.lexeme;
+package com.translator.lexic.lexeme.model;
 
 import java.util.LinkedHashMap;
 
-import static com.translator.lexic.lexeme.LexemeType.ADD_OP;
-import static com.translator.lexic.lexeme.LexemeType.BRACKETS_OP;
-import static com.translator.lexic.lexeme.LexemeType.KEYWORD;
-import static com.translator.lexic.lexeme.LexemeType.MULT_OP;
-import static com.translator.lexic.lexeme.LexemeType.PUNCT;
-import static com.translator.lexic.lexeme.LexemeType.REL_OP;
-import static com.translator.lexic.lexeme.LexemeType.WHITE;
+import static com.translator.lexic.lexeme.model.LexemeType.ADD_OP;
+import static com.translator.lexic.lexeme.model.LexemeType.BRACKETS_OP;
+import static com.translator.lexic.lexeme.model.LexemeType.KEYWORD;
+import static com.translator.lexic.lexeme.model.LexemeType.MULT_OP;
+import static com.translator.lexic.lexeme.model.LexemeType.PUNCT;
+import static com.translator.lexic.lexeme.model.LexemeType.REL_OP;
+import static com.translator.lexic.lexeme.model.LexemeType.WHITE;
 
 public class ReservedLexem {
 
@@ -31,8 +31,9 @@ public class ReservedLexem {
         put("then", KEYWORD);
         put("fi", KEYWORD);
 
-        put("go", KEYWORD);
+        put("in", KEYWORD);
         put("out", KEYWORD);
+
 
         put("=", KEYWORD);
 
@@ -48,12 +49,11 @@ public class ReservedLexem {
         put("==", REL_OP);
         put(">=", REL_OP);
         put("!=", REL_OP);
+        put("!", REL_OP);
         put(">", REL_OP);
 
         put("||", REL_OP);
-        put("|", REL_OP);
         put("&&", REL_OP);
-        put("&", REL_OP);
 
         put("(", BRACKETS_OP);
         put(")", BRACKETS_OP);

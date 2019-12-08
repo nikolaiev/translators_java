@@ -11,7 +11,7 @@ public class Expression extends SyntaxUnit {
 
         this.setSyntaxOptions(new LinkedList<>(){{
             add(ArithmExpression.getInstance());
-            add(new BoolExpression());
+            add(BoolExpression.getInstance());
         }});
     }
 }

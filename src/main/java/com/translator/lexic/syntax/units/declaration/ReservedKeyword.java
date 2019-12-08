@@ -1,6 +1,7 @@
-package com.translator.lexic.syntax.units;
+package com.translator.lexic.syntax.units.declaration;
 
-import com.translator.lexic.lexeme.Lexeme;
+import com.translator.lexic.lexeme.model.Lexeme;
+import com.translator.lexic.syntax.units.SyntaxUnit;
 
 public class ReservedKeyword extends SyntaxUnit {
 

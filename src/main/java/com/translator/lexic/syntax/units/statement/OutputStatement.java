@@ -1,6 +1,6 @@
 package com.translator.lexic.syntax.units.statement;
 
-import com.translator.lexic.syntax.units.ReservedKeyword;
+import com.translator.lexic.syntax.units.declaration.ReservedKeyword;
 import com.translator.lexic.syntax.units.SyntaxUnit;
 import com.translator.lexic.syntax.units.declaration.IdentifiersList;
 import com.translator.lexic.syntax.units.statement.expression.Expression;
