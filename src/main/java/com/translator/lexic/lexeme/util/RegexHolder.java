@@ -1,4 +1,4 @@
-package com.translator.lexic.util;
+package com.translator.lexic.lexeme.util;
 
 public class RegexHolder {
 

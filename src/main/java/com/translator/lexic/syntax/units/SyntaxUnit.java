@@ -1,6 +1,6 @@
 package com.translator.lexic.syntax.units;
 
-import com.translator.lexic.exception.SyntaxAnalyzerException;
+import com.translator.lexic.syntax.exception.SyntaxAnalyzerException;
 import com.translator.lexic.lexeme.Lexeme;
 import com.translator.lexic.lexeme.LexemeType;
 import lombok.Data;

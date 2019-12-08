@@ -1,4 +1,4 @@
-package com.translator.lexic.exception;
+package com.translator.lexic.lexeme.exception;
 
 public class UnexpectedLexemException extends RuntimeException {
 

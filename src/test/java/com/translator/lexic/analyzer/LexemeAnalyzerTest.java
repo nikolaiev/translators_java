@@ -65,6 +65,7 @@ class LexemeAnalyzerTest {
             .forEach(lexem -> {
                 System.out.println(format("|%-10s|%-15s|%-8s|%-8s|%-15s|%-15s|",
                     lexem.getValue()
+                        .replace(" ", "\\s")
                         .replace("\n", "\\n")
                         .replace("\r", "\\r")
                         .replace("\t", "\\t"),

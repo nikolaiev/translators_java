@@ -1,4 +1,4 @@
-package com.translator.lexic.exception;
+package com.translator.lexic.syntax.exception;
 
 import java.util.NoSuchElementException;
 

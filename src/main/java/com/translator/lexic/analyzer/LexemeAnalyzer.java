@@ -1,9 +1,9 @@
 package com.translator.lexic.analyzer;
 
-import com.translator.lexic.exception.UnexpectedLexemException;
+import com.translator.lexic.lexeme.exception.UnexpectedLexemException;
 import com.translator.lexic.lexeme.Lexeme;
 import com.translator.lexic.lexeme.LexemeType;
-import com.translator.lexic.util.LexemValidator;
+import com.translator.lexic.lexeme.util.LexemValidator;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,9 +16,11 @@ import static com.translator.lexic.lexeme.LexemeType.IDENTIFIER;
 import static com.translator.lexic.lexeme.LexemeType.NUMBER;
 import static com.translator.lexic.lexeme.LexemeType.STRING;
 import static com.translator.lexic.lexeme.ReservedLexem.RESERVED_LEXEMS;
-import static com.translator.lexic.util.RegexHolder.IDENTIFIER_REGEX;
-import static com.translator.lexic.util.RegexHolder.STRING_REGEX;
-import static com.translator.lexic.util.RegexHolder.UNSIGNED_NUMBER_REGEX;
+import static com.translator.lexic.lexeme.util.LexemValidator.verifyBuffer;
+import static com.translator.lexic.lexeme.util.RegexHolder.IDENTIFIER_REGEX;
+import static com.translator.lexic.lexeme.util.RegexHolder.STRING_REGEX;
+import static com.translator.lexic.lexeme.util.RegexHolder.UNSIGNED_NUMBER_REGEX;
+import static java.lang.String.format;
 
 @Data
 @Slf4j
@@ -45,7 +47,7 @@ public class LexemeAnalyzer {
                 Lexeme lexeme = getNextLexemIfPossible();
                 if (lexeme != null) {
 
-                    LexemValidator.verify(lexeme);
+                    LexemValidator.verifyLexem(lexeme);
 
                     addLexemToResultList(lexeme);
 
@@ -65,6 +67,9 @@ public class LexemeAnalyzer {
         } catch (Exception e) {
             log.error("Exception {}", e.getMessage());
             log.error("charIndex {}, buffer {}", charIndex, lexemBufferValue);
+        }
+        if(!lexemBufferValue.trim().isEmpty()){
+            throw new UnexpectedLexemException("Program code was not totally parsed : " + lexemBufferValue);
         }
     }
 
@@ -120,6 +125,8 @@ public class LexemeAnalyzer {
             String stringLexem = getBufferAndClearAndDecreaseCharIdex();
             return getNewLexem(stringLexem, STRING);
         }
+
+        verifyBuffer(lexemBufferValue, charIndex, lineIndex);
 
         return null;
     }

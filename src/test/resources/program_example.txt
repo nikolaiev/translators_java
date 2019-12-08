@@ -24,7 +24,7 @@ str1:string
     out(b1)
     out(str1)
 
-    if b1 >= c#4e then
+    if b1 != c#4e then
         out(b1)
     fi
     isA=true
