@@ -20,6 +20,15 @@ r4,ty5:bool;
         in(d1,e3);
     } until (!a>=4);
 
+    repeat{
+            a2=2;
+            in(d1,e3);
+            repeat{
+                    f4=2;
+                    in(d12,e3);
+                } until (!a>=4 && (v5>=2));
+        } until (!a>=4);
+
     if (w<=3 && (e>=6 || true)) then {
         a=2;
         in(b);
