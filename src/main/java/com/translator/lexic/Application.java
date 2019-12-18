@@ -1,8 +1,8 @@
 package com.translator.lexic;
 
-import com.translator.lexic.lexeme.analyzer.LexemeAnalyzer;
-import com.translator.lexic.syntax.analyzer.SyntaxTreeAnalyzer;
+import com.translator.lexic.lexeme.analyzer.state.LexemeAnalyzer;
 import com.translator.lexic.lexeme.model.Lexeme;
+import com.translator.lexic.syntax.analyzer.SyntaxTreeAnalyzer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,11 +27,11 @@ public class Application {
         //System.out.println("\nPress any key to start syntax analyzing ...");
         //PAUSE TODO comment if needed
         //System.in.read(); //pause to key press until Syntax analyzer start
-        System.out.println("\nStarted syntax analyzing ...");
+       // System.out.println("\nStarted syntax analyzing ...");
 
         //SYNTAX ANALYZER
-        SyntaxTreeAnalyzer syntaxTreeAnalyzer = new SyntaxTreeAnalyzer();
-        syntaxTreeAnalyzer.analyze(lexemeAnalyzer.getResultProgramCodeLexemes());
+       // SyntaxTreeAnalyzer syntaxTreeAnalyzer = new SyntaxTreeAnalyzer();
+//        syntaxTreeAnalyzer.analyze(lexemeAnalyzer.getResultProgramCodeLexemes());
     }
 
     private static void printLexemeAnalyzerResult(LexemeAnalyzer lexemeAnalyzer) {
@@ -100,7 +100,7 @@ public class Application {
         System.out.println("-----------------------------------------------------------------------------");
     }
 
-    private static String  emptyIfLessThanZero(int i) {
+    private static String emptyIfLessThanZero(int i) {
         if (i < 0) {
             return "";
         }
