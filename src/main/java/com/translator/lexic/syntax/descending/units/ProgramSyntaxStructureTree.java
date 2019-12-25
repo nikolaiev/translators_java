@@ -2,8 +2,10 @@ package com.translator.lexic.syntax.descending.units;
 
 import com.translator.lexic.lexeme.model.Lexeme;
 import com.translator.lexic.syntax.descending.exception.SyntaxAnalyzerException;
-import com.translator.lexic.syntax.descending.units.declaration.ReservedKeyword;
 import com.translator.lexic.syntax.descending.units.declaration.DeclarationList;
+import com.translator.lexic.syntax.descending.units.declaration.Identifier;
+import com.translator.lexic.syntax.descending.units.declaration.ReservedKeyword;
+import com.translator.lexic.syntax.descending.units.statement.StatementList;
 import lombok.Data;
 
 import java.util.LinkedList;
@@ -35,7 +37,7 @@ public class ProgramSyntaxStructureTree {
             unitsTree.validateSyntax(lexemes);
         } catch (SyntaxAnalyzerException e) {
             saveSyntaxErrorState(e, lexemes.size());
-        }catch (StackOverflowError e) {
+        } catch (StackOverflowError e) {
             saveSyntaxErrorState(new SyntaxAnalyzerException("Error while parsing lexemes before " + lexemes.getFirst()), lexemes.size());
         }
     }
