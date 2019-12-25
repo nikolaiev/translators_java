@@ -31,7 +31,14 @@ public class Application {
         magazineAutomaton.analyze();
 
         if(magazineAutomaton.getWarnings().isEmpty()){
-            System.out.println("Syntax is valid");
+            //перевіряємо пустоту стека
+            if(magazineAutomaton.getStack().size()==1 &&
+                magazineAutomaton.getStack().getFirst()==-1) {
+                System.out.println("Syntax is valid");
+            }else{
+                System.out.println("Syntax error stack is not empty");
+                System.out.println(magazineAutomaton.getStack());
+            }
         }else {
             System.out.println("Syntax errors found : ");
             magazineAutomaton.getWarnings().forEach(System.out::println);
