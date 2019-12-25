@@ -7,7 +7,6 @@ import com.translator.lexic.lexeme.model.Lexeme;
 import com.translator.lexic.lexeme.model.LexemeType;
 import com.translator.lexic.lexeme.model.ReservedLexem;
 import com.translator.lexic.lexeme.util.RegexHolder;
-import com.translator.lexic.syntax.units.declaration.ReservedKeyword;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -88,7 +87,7 @@ public abstract class AbstractState {
     }
 
     private void addLexemeToResult(String lexemeStr) {
-        LexemeType lexemeType = ReservedLexem.RESERVED_LEXEMS.get(lexemeStr);
+        LexemeType lexemeType = ReservedLexem.RESERVED_LEXEMES.get(lexemeStr);
         if(lexemeType!=null){
             LexemeAnalyzer.resultProgramCodeLexemes.add(getNewLexem(lexemeStr,lexemeType));
             return;

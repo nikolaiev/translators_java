@@ -55,7 +55,7 @@ public class Lexeme {
                 break;
             }
             default: {
-                Set<String> keySet = ReservedLexem.RESERVED_LEXEMS.keySet();
+                Set<String> keySet = ReservedLexem.RESERVED_LEXEMES.keySet();
                 List keysList = Arrays.asList(keySet.toArray());
                 code = keysList.indexOf(value);
             }
@@ -75,10 +75,14 @@ public class Lexeme {
         return new Lexeme(value, getLexemType(value));
     }
 
+    public static Lexeme of(LexemeType type) {
+        return new Lexeme(null, type);
+    }
+
     private static LexemeType getLexemType(String lexemStr) {
-        if(!ReservedLexem.RESERVED_LEXEMS.containsKey(lexemStr)){
+        if(!ReservedLexem.RESERVED_LEXEMES.containsKey(lexemStr)){
             throw new RuntimeException("Nuo such reserved Lexeme "+ lexemStr);
         }
-        return ReservedLexem.RESERVED_LEXEMS.get(lexemStr);
+        return ReservedLexem.RESERVED_LEXEMES.get(lexemStr);
     }
 }

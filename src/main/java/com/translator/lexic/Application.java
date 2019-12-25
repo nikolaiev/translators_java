@@ -2,7 +2,9 @@ package com.translator.lexic;
 
 import com.translator.lexic.lexeme.analyzer.state.LexemeAnalyzer;
 import com.translator.lexic.lexeme.model.Lexeme;
-import com.translator.lexic.syntax.analyzer.SyntaxTreeAnalyzer;
+import com.translator.lexic.lexeme.model.LexemeType;
+import com.translator.lexic.syntax.descending.analyzer.SyntaxTreeAnalyzer;
+import com.translator.lexic.syntax.magazine.MagazineAutomaton;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,14 +26,18 @@ public class Application {
         lexemeAnalyzer.analyzeCode();
         printLexemeAnalyzerResult(lexemeAnalyzer);
 
-        //System.out.println("\nPress any key to start syntax analyzing ...");
-        //PAUSE TODO comment if needed
-        //System.in.read(); //pause to key press until Syntax analyzer start
-       // System.out.println("\nStarted syntax analyzing ...");
-
         //SYNTAX ANALYZER
-       // SyntaxTreeAnalyzer syntaxTreeAnalyzer = new SyntaxTreeAnalyzer();
-//        syntaxTreeAnalyzer.analyze(lexemeAnalyzer.getResultProgramCodeLexemes());
+        MagazineAutomaton magazineAutomaton = new MagazineAutomaton(lexemeAnalyzer.getResultProgramCodeLexemes());
+        magazineAutomaton.analyze();
+
+        if(magazineAutomaton.getWarnings().isEmpty()){
+            System.out.println("Syntax is valid");
+        }else {
+            System.out.println("Syntax errors found : ");
+            magazineAutomaton.getWarnings().forEach(System.out::println);
+        }
+         SyntaxTreeAnalyzer syntaxTreeAnalyzer = new SyntaxTreeAnalyzer(lexemeAnalyzer.getResultProgramCodeLexemes());
+         syntaxTreeAnalyzer.analyze();
     }
 
     private static void printLexemeAnalyzerResult(LexemeAnalyzer lexemeAnalyzer) {
