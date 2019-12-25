@@ -102,7 +102,7 @@ class AutomatonStateConfiguration {
         //recursion
         AUTOMATON_STATES.add(new AutomatonState(201, 201, Lexeme.of("("), 204));
         AUTOMATON_STATES.add(new AutomatonState(201, 201, Lexeme.of("!")));
-        AUTOMATON_STATES.add(new AutomatonState(201, 203, Lexeme.of(LexemeType.BOOL), 203));
+        AUTOMATON_STATES.add(new AutomatonState(201, 203, Lexeme.of(LexemeType.BOOL)));
         //expression automaton
         AUTOMATON_STATES.add(new AutomatonState(201, 72, Lexeme.of("-"), 202));
         AUTOMATON_STATES.add(new AutomatonState(201, 74, Lexeme.of(LexemeType.IDENTIFIER), 202));

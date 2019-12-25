@@ -7,7 +7,7 @@ var a:int;
         repeat{
                 a=a;
                 a=a+2*(-a+b);
-            } until(true && false || true)
+            } until(true && false || (a<=(5-2)))
     } until(false);
     a=a;
 
