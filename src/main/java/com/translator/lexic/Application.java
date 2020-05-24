@@ -2,9 +2,13 @@ package com.translator.lexic;
 
 import com.translator.lexic.lexeme.analyzer.state.LexemeAnalyzer;
 import com.translator.lexic.lexeme.model.Lexeme;
-import com.translator.lexic.lexeme.model.LexemeType;
 import com.translator.lexic.syntax.descending.analyzer.SyntaxTreeAnalyzer;
 import com.translator.lexic.syntax.magazine.MagazineAutomaton;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,37 +18,84 @@ import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Scanner;
 
 import static java.lang.String.format;
 
 public class Application {
 
     public static void main(String[] args) throws IOException {
+        String programCode = getFileContentAsString("program_example_2.txt");
+
+        System.out.println("Enter 1 to use Antrl for lexical analize; Otherwise - standard.\n");
+        int key = 1;// getKey();
         //LEXEME ANALYZER
-        String programCode = getFileContentAsString("program_example.txt");
-        LexemeAnalyzer lexemeAnalyzer = new LexemeAnalyzer(programCode);
-        lexemeAnalyzer.analyzeCode();
-        printLexemeAnalyzerResult(lexemeAnalyzer);
+        //if (key == 1) {
+            antrl4LexemeAnalyzer(programCode);
+        //} else {
+            LexemeAnalyzer lexemeAnalyzer = simpleLexemeAnalyzer(programCode);
+            printLexemeAnalyzerResult(lexemeAnalyzer);
+        //}
 
         //SYNTAX ANALYZER
+        antrl4SyntaxAnalyzer(programCode);
+        magazineSyntaxAnalyzer(lexemeAnalyzer);
+        //treeSyntaxAnalyzer(lexemeAnalyzer);
+    }
+
+    private static void antrl4LexemeAnalyzer(String programCode) {
+        HelloLexer lexer = new HelloLexer(CharStreams.fromString(programCode));
+
+        Token token = lexer.nextToken();
+        while (token.getType() != HelloLexer.EOF) {
+            System.out.println("\t" + token.getType() +"\t" + HelloLexer.ruleNames[token.getType()-1]+ "\t\t" + token.getText());
+            token = lexer.nextToken();
+        }
+    }
+
+    private static int getKey() {
+
+        Scanner keyboard = new Scanner(System.in);
+        System.out.println("enter an integer");
+        return keyboard.nextInt();
+    }
+
+    private static void antrl4SyntaxAnalyzer(String programCode) {
+        HelloLexer lexer = new HelloLexer(CharStreams.fromString(programCode));
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        HelloParser parser = new HelloParser(tokens);
+        ParseTree tree = parser.r_id();
+        ParseTreeWalker walker = new ParseTreeWalker();
+        walker.walk(new HelloBaseListener(), tree);
+    }
+
+    private static LexemeAnalyzer simpleLexemeAnalyzer(String programCode) {
+        LexemeAnalyzer lexemeAnalyzer = new LexemeAnalyzer(programCode);
+        lexemeAnalyzer.analyzeCode();
+        return lexemeAnalyzer;
+    }
+
+    private static void treeSyntaxAnalyzer(LexemeAnalyzer lexemeAnalyzer) {
+        SyntaxTreeAnalyzer syntaxTreeAnalyzer = new SyntaxTreeAnalyzer(lexemeAnalyzer.getResultProgramCodeLexemes());
+        syntaxTreeAnalyzer.analyze();
+    }
+
+    private static void magazineSyntaxAnalyzer(LexemeAnalyzer lexemeAnalyzer) {
         MagazineAutomaton magazineAutomaton = new MagazineAutomaton(lexemeAnalyzer.getResultProgramCodeLexemes());
         magazineAutomaton.analyze();
-
-        if(magazineAutomaton.getWarnings().isEmpty()){
+        if (magazineAutomaton.getWarnings().isEmpty()) {
             //перевіряємо пустоту стека
-            if(magazineAutomaton.getStack().size()==1 &&
-                magazineAutomaton.getStack().getFirst()==-1) {
+            if (magazineAutomaton.getStack().size() == 1 &&
+                magazineAutomaton.getStack().getFirst() == -1) {
                 System.out.println("Syntax is valid");
-            }else{
+            } else {
                 System.out.println("Syntax error stack is not empty");
                 System.out.println(magazineAutomaton.getStack());
             }
-        }else {
+        } else {
             System.out.println("Syntax errors found : ");
             magazineAutomaton.getWarnings().forEach(System.out::println);
         }
-         SyntaxTreeAnalyzer syntaxTreeAnalyzer = new SyntaxTreeAnalyzer(lexemeAnalyzer.getResultProgramCodeLexemes());
-         syntaxTreeAnalyzer.analyze();
     }
 
     private static void printLexemeAnalyzerResult(LexemeAnalyzer lexemeAnalyzer) {
