@@ -14,33 +14,42 @@ public class PolizConverter {
 
     static HashMap<String, Integer> lexemePriorities = new HashMap<>() {{
         put("(", 0);
+        put("if", 0);
+//        put(";", 0); //TODO think about it
         put(")", 1);
-        put("||", 1);
-        put("&&", 2);
-        put("!", 3);
+        put("then", 1);
+        put("=", 2);
+        put("||", 3);
+        put("&&", 4);
+        put("!", 5);
 
-        put("<", 4); //20
-        put("<=", 4); //21
-        put("==", 4); //22
-        put(">=", 4); //23
-        put("!=", 4); //24
-        put(">", 4); //26''
+        put("<", 6); //20
+        put("<=", 6); //21
+        put("==", 6); //22
+        put(">=", 6); //23
+        put("!=", 6); //24
+        put(">", 6); //26''
 
-        put("+", 5);
-        put("-", 5);
-        put("@", 6); //УНАРНИЙ МІНУС
-        put("*", 6);
-        put("/", 6);
+        put("+", 7);
+        put("-", 7);
+        put("@", 8); //УНАРНИЙ МІНУС
+        put("*", 8);
+        put("/", 8);
 
-//        put("%", 5);
-        put("^", 7);
-
+//        put("%", 9);
+        put("^", 9);
     }};
 
+
     static Lexeme UNARY_MINUS = new Lexeme("@", LexemeType.KEYWORD);
+    //БП - безумовний перехід
+    static Lexeme GOTO = new Lexeme("БП", LexemeType.KEYWORD);
+    //УПХ - умовний перехід по хибності
+    static Lexeme GOTO_ON_FAIL = new Lexeme("УПХ", LexemeType.KEYWORD);
+    static LinkedList<Lexeme> GOTOS = new LinkedList<>();
+    static int gotoNumber = 0;
 
-
-    public static HashMap<String, String> getPoliz(LinkedList<Lexeme> polizLexemes) {
+    public static LinkedList<Lexeme> getPoliz(LinkedList<Lexeme> polizLexemes) {
         LinkedHashMap<String, String> resultPoliz = new LinkedHashMap<>();
 
         LinkedList<Lexeme> exit = new LinkedList<Lexeme>();
@@ -56,12 +65,14 @@ public class PolizConverter {
             System.out.println("EXIT " + formatExit(exit));
             System.out.println("STACK " + formatExit(stack));
             System.out.println("InputLexeme:" + lexeme);
+
             LexemeType type = lexeme.getType();
+            String lexemeValue = lexeme.getValue();
 
-            if (lexeme.getValue().equals("-")) {
-                //System.out.println("Minus detected");
-                //System.out.println("Prev lexeme:" + previousLexeme);
-
+            if (lexemeValue.equals("}") || lexemeValue.equals("{") || lexemeValue.equals(";")) {
+                //noop
+                //skip this symbols for poliz
+            } else if (lexemeValue.equals("-")) {//unary minus
                 //previousLexeme can be null
                 LexemeType previousLexemeType = previousLexeme != null ? previousLexeme.getType() : null;
                 String previousLexemeValue = previousLexeme != null ? previousLexeme.getValue() : null;
@@ -72,16 +83,49 @@ public class PolizConverter {
                 } else {
                     processInputTokenWithPriority(exit, stack, lexeme);
                 }
-            } else if (lexeme.getValue().equals("(")) {
+            } else if (lexemeValue.equals("(")) {
                 stack.add(lexeme);
-            } else if (lexeme.getValue().equals(")")) {
+
+            } else if (lexemeValue.equals(")")) {
                 while (true) {
                     Lexeme lastOnStack = stack.removeLast();
                     if (lastOnStack.getValue().equals("(")) break;
                     exit.add(lastOnStack);
                 }
+            } else if (lexemeValue.equals("if")) { //IF Statement
+                stack.add(lexeme);
+
+            } else if (lexemeValue.equals("then")) {
+                while (true) {
+                    Lexeme lastOnStack = stack.getLast();
+                    if (lastOnStack.getValue().equals("if")) {
+                        String _goto = "m" + gotoNumber + ":";
+                        gotoNumber++;
+                        //mi УПХ
+                        final Lexeme _gotoLexeme = new Lexeme(_goto, LexemeType.KEYWORD);
+                        //just a list of gotos
+                        GOTOS.add(_gotoLexeme);
+                        exit.add(_gotoLexeme);
+                        exit.add(GOTO_ON_FAIL);
+                        //mi
+                        stack.add(_gotoLexeme);
+                        break;
+                    }
+                    stack.removeLast();
+                    exit.add(lastOnStack);
+                }
+            } else if (lexemeValue.equals("fi")) {
+                while (true) {
+                    Lexeme lastOnStack = stack.removeLast();
+                    if (lastOnStack.getValue().equals("if")) {
+                        //exit.add(GOTOS.removeLast());
+                        break;
+                    }
+                    exit.add(lastOnStack);
+                }
             } else if (type == LexemeType.IDENTIFIER
                 || type == LexemeType.STRING
+                || type == LexemeType.BOOL
                 || type == LexemeType.NUMBER) {
                 exit.add(lexeme);
             } else {
@@ -96,8 +140,7 @@ public class PolizConverter {
         System.out.println("Exit:" + formatExit(exit));
         System.out.println("Stack:" + formatExit(stack));
 
-        //TODO
-        return null;
+        return exit;
     }
 
     //пункт 2 алгоритму Дейкстри
@@ -115,8 +158,11 @@ public class PolizConverter {
 
                 System.out.println("stackFirstElemPrior " + stackFirstElemPrior);
                 System.out.println("currOperPrior " + currOperPrior);
-
-                if (stackFirstElemPrior >= currOperPrior) {
+                //stackFirstElemPrior is null for GOTOS
+                if (stackFirstElemPrior == null) {
+                    stack.add(lexeme);
+                    shouldRepeatThisPunct = false;
+                } else if (stackFirstElemPrior >= currOperPrior) {
                     exit.add(stack.removeLast());
                     shouldRepeatThisPunct = true;
                 } else {

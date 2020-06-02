@@ -5,6 +5,7 @@ import com.translator.lexic.lexeme.model.Lexeme;
 import com.translator.lexic.poliz.PolizConverter;
 import com.translator.lexic.syntax.descending.analyzer.SyntaxTreeAnalyzer;
 import com.translator.lexic.syntax.magazine.MagazineAutomaton;
+import com.translator.lexic.util.Utils;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Token;
@@ -29,7 +30,7 @@ import static java.lang.String.format;
 public class Application {
 
     public static void main(String[] args) throws IOException {
-        String programCode = getFileContentAsString("poliz/program_example_1.txt");
+        String programCode = Utils.getFileContentAsString("poliz/program_example_1.txt");
 
         System.out.println("Enter 1 to use Antrl for lexical analize; Otherwise - standard.\n");
         int key = 1;// getKey();
@@ -53,7 +54,7 @@ public class Application {
 
     private static void poliz(LinkedList<Lexeme> resultProgramCodeLexemes) {
         //TODO format to poliz and show
-        HashMap<String, String> poliz = PolizConverter.getPoliz(resultProgramCodeLexemes);
+        LinkedList<Lexeme> poliz = PolizConverter.getPoliz(resultProgramCodeLexemes);
     }
 
     private static void antrl4LexemeAnalyzer(String programCode) {
@@ -82,7 +83,7 @@ public class Application {
         walker.walk(new HelloBaseListener(), tree);
     }
 
-    private static LexemeAnalyzer simpleLexemeAnalyzer(String programCode) {
+    public static LexemeAnalyzer simpleLexemeAnalyzer(String programCode) {
         LexemeAnalyzer lexemeAnalyzer = new LexemeAnalyzer(programCode);
         lexemeAnalyzer.analyzeCode();
         return lexemeAnalyzer;
@@ -120,19 +121,6 @@ public class Application {
         System.out.println("\n\n\n");
         System.out.println("Literals");
         printLiterals(lexemeAnalyzer);
-    }
-
-    private static String getFileContentAsString(String fileName) throws IOException {
-        InputStream resourceAsStream = Application.class.getClassLoader().getResourceAsStream(fileName);
-        StringBuilder textBuilder = new StringBuilder();
-        try (Reader reader = new BufferedReader(new InputStreamReader
-            (resourceAsStream, Charset.forName(StandardCharsets.UTF_8.name())))) {
-            int c = 0;
-            while ((c = reader.read()) != -1) {
-                textBuilder.append((char) c);
-            }
-        }
-        return textBuilder.toString();
     }
 
     private static void printLiterals(LexemeAnalyzer analyzer) {

@@ -22,6 +22,9 @@ public class LexemeAnalyzer {
     public static LinkedHashSet<Lexeme> resultProgramLiteralLexemes = new LinkedHashSet<>(); //list of result lexems
 
     public LexemeAnalyzer(String programCode) {
+        resultProgramCodeLexemes = new LinkedList<>();
+        resultProgramIdentifierLexemes = new LinkedHashSet<>();
+        resultProgramLiteralLexemes = new LinkedHashSet<>();
         PROGRAM_CODE = programCode + " ";
     }
 
