@@ -1,0 +1,14 @@
+Program Julia;
+var a:bool; c:float; z:string;
+{
+
+    a= true;
+    out(a);
+    a= true || false;
+    out(a);
+    a= a && true;
+    out(a);
+    c=2;
+    a=c>=2;
+    out(a);
+}

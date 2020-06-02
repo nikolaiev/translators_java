@@ -17,6 +17,11 @@ class PolizInterpreterTest {
         testPoliz("poliz_interpreter/program_example_arithm.txt");
     }
 
+    @Test
+    void testConditional_Expression() throws IOException {
+        testPoliz("poliz_interpreter/program_example_conditional.txt");
+    }
+
     private void testPoliz(String fileName) throws IOException {
         String programCode = Utils.getFileContentAsString(fileName);
         LexemeAnalyzer lexemeAnalyzer = Application.simpleLexemeAnalyzer(programCode);

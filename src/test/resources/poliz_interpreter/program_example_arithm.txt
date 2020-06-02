@@ -1,7 +1,9 @@
 Program Julia;
-var a:int; c:float;
+var a:bool; c:float; z:string;
 {
-    c=1.5;
-    a=1;
+    out('Введіть значення a:');
+    in(a,z);
     c=a*4^(2-2)/1.;
+    out('Значення с, a:');
+    out(c, a);
 }

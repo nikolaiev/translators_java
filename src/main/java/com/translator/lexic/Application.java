@@ -3,6 +3,7 @@ package com.translator.lexic;
 import com.translator.lexic.lexeme.analyzer.state.LexemeAnalyzer;
 import com.translator.lexic.lexeme.model.Lexeme;
 import com.translator.lexic.poliz.PolizConverter;
+import com.translator.lexic.poliz.PolizInterpreter;
 import com.translator.lexic.syntax.descending.analyzer.SyntaxTreeAnalyzer;
 import com.translator.lexic.syntax.magazine.MagazineAutomaton;
 import com.translator.lexic.util.Utils;
@@ -19,18 +20,17 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
+import static com.translator.lexic.util.Utils.getFileContentAsString;
 import static java.lang.String.format;
 
 public class Application {
 
     public static void main(String[] args) throws IOException {
-        String programCode = Utils.getFileContentAsString("poliz/program_example_1.txt");
+        String programCode = getFileContentAsString("poliz_interpreter/program_example_arithm.txt");
 
         System.out.println("Enter 1 to use Antrl for lexical analize; Otherwise - standard.\n");
         int key = 1;// getKey();
@@ -53,8 +53,9 @@ public class Application {
     }
 
     private static void poliz(LinkedList<Lexeme> resultProgramCodeLexemes) {
-        //TODO format to poliz and show
+        //TODO show something
         LinkedList<Lexeme> poliz = PolizConverter.getPoliz(resultProgramCodeLexemes);
+        PolizInterpreter.interpret(poliz);
     }
 
     private static void antrl4LexemeAnalyzer(String programCode) {
