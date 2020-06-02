@@ -67,6 +67,8 @@ public class PolizConverter {
         polizLexemes = polizLexemes
             .stream().filter(l -> l.getType() != LexemeType.WHITE).collect(Collectors.toCollection(LinkedList::new));
 
+        polizLexemes = cutOffRedundantLexemes(polizLexemes);
+
         //we need to check prev lexeme for унарний мінус
         Lexeme previousLexeme = null;
         while (!polizLexemes.isEmpty()) {
@@ -202,6 +204,14 @@ public class PolizConverter {
         return exit.stream().filter(lexeme -> !lexeme.getValue().equals(";")).collect(Collectors.toCollection(LinkedList::new));
     }
 
+    private static LinkedList<Lexeme> cutOffRedundantLexemes(LinkedList<Lexeme> polizLexemes) {
+        final Lexeme first = polizLexemes.getFirst();
+        if (first.getValue().equalsIgnoreCase("program")) {
+            polizLexemes = new LinkedList<>(polizLexemes.subList(2, polizLexemes.size() - 1));//cut off <Program test>
+        }
+        return polizLexemes;
+    }
+
     //пункт 2 алгоритму Дейкстри
     private static void processInputTokenWithPriority(LinkedList<Lexeme> exit, LinkedList<Lexeme> stack, Lexeme lexeme) {
         boolean shouldRepeatThisPunct;
@@ -233,7 +243,7 @@ public class PolizConverter {
     }
 
     private static String formatExit(LinkedList<Lexeme> exit) {
-        return exit.stream().map(Lexeme::getValue).filter(l->!l.equals(";"))
+        return exit.stream().map(Lexeme::getValue).filter(l -> !l.equals(";"))
             .collect(Collectors.joining(","));
     }
 

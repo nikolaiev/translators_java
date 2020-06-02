@@ -1,7 +1,0 @@
-program test;
-var a:float;
-{
-    in(a);
-    a=2/3+4*a;
-    write(a);
-}

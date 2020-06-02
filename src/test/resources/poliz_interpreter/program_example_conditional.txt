@@ -1,14 +1,13 @@
 Program Julia;
-var a:bool; c:float; z:string;
+var a:int; b:float;
 {
-
-    a= true;
-    out(a);
-    a= true || false;
-    out(a);
-    a= a && true;
-    out(a);
-    c=2;
-    a=c>=2;
-    out(a);
+    a=2;
+    b=4/2;
+    if (b>=a) then {
+        out('Hello');
+        if (a>=(b+1)) then {
+                out('Hello');
+            }fi;
+    }fi;
+    out('world!');
 }

@@ -29,9 +29,9 @@ public class PolizInterpreter {
         stack = new LinkedList<>();
 
         for (int step = 0; step < polizLexemes.size(); step++) {
-            System.out.println("Stack " + stack);
+            //System.out.println("\nStack " + stack);
             final Lexeme lexeme = polizLexemes.get(step);
-            System.out.println("Next lexeme " + lexeme);
+            //System.out.println("Next lexeme " + lexeme);
             if (lexeme.getType() == LexemeType.IDENTIFIER
                 || lexeme.getType() == LexemeType.NUMBER
                 || lexeme.getType() == LexemeType.STRING
@@ -60,6 +60,24 @@ public class PolizInterpreter {
                 операторВиводу();
             } else if (lexeme.getType() == LexemeType.REL_OP) {
                 операціяВідношення(lexeme);
+            } else if (lexeme.getType() == LexemeType.KEYWORD) {//з цим типом маются в полізі тільки мітки
+                final String _gotoName = lexeme.getValue();
+                if (step == polizLexemes.size() - 1) {
+                    //noop end of program
+                } else {
+                    final Lexeme nextLexeme = polizLexemes.get(step + 1);
+                    if (nextLexeme.getValue().equals("УПХ")) {//else noop
+                        final Lexeme boolLexeme = stack.removeLast();
+                        if (boolLexeme.getType() != LexemeType.BOOL) {
+                            throw new RuntimeException("Something wrong with УПХ");
+                        }
+                        final boolean condition = Boolean.parseBoolean(boolLexeme.getValue());
+                        if (!condition) { //УПХ - умова переходу на ХИБУ
+                            //TODO search next goto and move to it;
+                            step = searchStepForGoto(polizLexemes, _gotoName, step);
+                        }// else noop
+                    }// else noop
+                }
             }
         }
 
@@ -67,6 +85,16 @@ public class PolizInterpreter {
         System.out.println("Identifiers " + identifiersValues);
         System.out.println("IdentifiersTypes " + identifiersAndNumericLexemTypes);
         System.out.println("");
+    }
+
+    private static int searchStepForGoto(LinkedList<Lexeme> polizLexemes, String gotoName, int step) {
+        for (int index = 0; index < polizLexemes.size(); index++) {
+            if (polizLexemes.get(index).getValue().equals(gotoName) && index != step) {//i!=step - need to find another GOTO ratehr when GOTO that has triggered this search
+                return index;
+            }
+        }
+
+        throw new RuntimeException("Something wrong with УПХ next GOTO search");
     }
 
     private static void операціяВідношення(Lexeme lexeme) {

@@ -1,6 +1,0 @@
-program test;
-var a:int;
-{
-    a=2/3+4*a;
-    write(a);
-}

@@ -1,0 +1,10 @@
+Program Julia;
+var a:int; b:float;
+{
+    a=0;
+    b=9/2;
+    repeat{
+        a=a+1;
+        out(a);
+    }until(a>b);
+}
