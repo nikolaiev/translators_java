@@ -38,15 +38,12 @@ public class PolizConverter {
         put("@", 8); //УНАРНИЙ МІНУС
         put("*", 8);
         put("/", 8);
-
-//        put("%", 9);
+        put("%", 9);
         put("^", 9);
     }};
 
     static HashMap<Lexeme, String> identifiersTypes = new HashMap<>();
     static Lexeme UNARY_MINUS = new Lexeme("@", LexemeType.KEYWORD);
-    //БП - безумовний перехід
-    static Lexeme GOTO = new Lexeme("БП", LexemeType.KEYWORD);
     //УПХ - умовний перехід по хибності
     static Lexeme GOTO_ON_FAIL = new Lexeme("УПХ", LexemeType.KEYWORD);
     static LinkedList<Lexeme> GOTOS = new LinkedList<>();
@@ -59,10 +56,8 @@ public class PolizConverter {
         gotoNumber = 0;
         isInsideUntilCondition = false;
 
-        LinkedHashMap<String, String> resultPoliz = new LinkedHashMap<>();
-
-        LinkedList<Lexeme> exit = new LinkedList<Lexeme>();
-        LinkedList<Lexeme> stack = new LinkedList<Lexeme>();
+        LinkedList<Lexeme> exit = new LinkedList<>();
+        LinkedList<Lexeme> stack = new LinkedList<>();
         //remove whitespaces
         polizLexemes = polizLexemes
             .stream().filter(l -> l.getType() != LexemeType.WHITE).collect(Collectors.toCollection(LinkedList::new));
@@ -76,7 +71,7 @@ public class PolizConverter {
             System.out.println("");
             System.out.println("EXIT " + formatExit(exit));
             System.out.println("STACK " + formatExit(stack));
-            System.out.println("InputLexeme:" + lexeme);
+            //System.out.println("InputLexeme:" + lexeme);
 
             LexemeType type = lexeme.getType();
 
@@ -197,8 +192,9 @@ public class PolizConverter {
         while (!stack.isEmpty()) {
             exit.add(stack.removeLast());
         }
-        System.out.println("Exit:" + formatExit(exit));
-        System.out.println("Stack:" + formatExit(stack));
+        System.out.println();
+        System.out.println("RESULT EXIT:" + formatExit(exit));
+        System.out.println("RESULT STACK:" + formatExit(stack));
 
         //simply remove ; from POLIZ. Just did not want to polute code with ; exclusion
         return exit.stream().filter(lexeme -> !lexeme.getValue().equals(";")).collect(Collectors.toCollection(LinkedList::new));
@@ -221,12 +217,12 @@ public class PolizConverter {
                 shouldRepeatThisPunct = false;
             } else {
                 final Lexeme lastInStack = stack.getLast();
-                System.out.println("lastInStack:" + lastInStack);
+                //System.out.println("lastInStack:" + lastInStack);
                 final Integer stackFirstElemPrior = lexemePriorities.get(lastInStack.getValue());
                 final Integer currOperPrior = lexemePriorities.get(lexeme.getValue());
 
-                System.out.println("stackFirstElemPrior " + stackFirstElemPrior);
-                System.out.println("currOperPrior " + currOperPrior);
+                //System.out.println("stackFirstElemPrior " + stackFirstElemPrior);
+                //System.out.println("currOperPrior " + currOperPrior);
                 //stackFirstElemPrior is null for GOTOS
                 if (stackFirstElemPrior == null) {
                     stack.add(lexeme);
@@ -246,6 +242,4 @@ public class PolizConverter {
         return exit.stream().map(Lexeme::getValue).filter(l -> !l.equals(";"))
             .collect(Collectors.joining(","));
     }
-
-
 }

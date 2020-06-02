@@ -81,10 +81,9 @@ public class PolizInterpreter {
             }
         }
 
-        System.out.println("Stack " + stack);
-        System.out.println("Identifiers " + identifiersValues);
-        System.out.println("IdentifiersTypes " + identifiersAndNumericLexemTypes);
-        System.out.println("");
+        //System.out.println("Stack " + stack);
+        //System.out.println("Identifiers " + identifiersValues);
+        //System.out.println("IdentifiersTypes " + identifiersAndNumericLexemTypes);
     }
 
     private static int searchStepForGoto(LinkedList<Lexeme> polizLexemes, String gotoName, int step) {
@@ -124,8 +123,8 @@ public class PolizInterpreter {
     private static void бінарнийОператорКонюнкції(BiFunction<Boolean, Boolean, Boolean> action) {
         final Lexeme rightLexeme = stack.removeLast();
         final Lexeme leftLexeme = stack.removeLast();
-        System.out.println("rightLexeme:" + rightLexeme);
-        System.out.println("leftLexeme:" + leftLexeme);
+        //System.out.println("rightLexeme:" + rightLexeme);
+        //System.out.println("leftLexeme:" + leftLexeme);
 
         String rightVarValue = getVarValueAsString(rightLexeme);
         String leftVarValue = getVarValueAsString(leftLexeme);
@@ -140,8 +139,8 @@ public class PolizInterpreter {
     private static void бінарнийОператорВідношення(BiFunction<Float, Float, Boolean> action) {
         final Lexeme rightLexeme = stack.removeLast();
         final Lexeme leftLexeme = stack.removeLast();
-        System.out.println("rightLexeme:" + rightLexeme);
-        System.out.println("leftLexeme:" + leftLexeme);
+        //System.out.println("rightLexeme:" + rightLexeme);
+        //System.out.println("leftLexeme:" + leftLexeme);
 
         String rightVarValue = getVarValueAsString(rightLexeme);
         String leftVarValue = getVarValueAsString(leftLexeme);
@@ -177,7 +176,7 @@ public class PolizInterpreter {
                 if (valueStr == null) {
                     throw new RuntimeException("Trying to print uninitialized var: " + valueStr);
                 }
-                System.out.println(valueStr);
+                //System.out.println(valueStr);
             } else {
                 //костиль, так як лексема строки додається з кавичками ' .ТОДО
                 System.out.println(value.getValue().replaceAll("'", ""));
@@ -204,7 +203,6 @@ public class PolizInterpreter {
 
             while (!inOperIdens.isEmpty()) {
                 lexeme = inOperIdens.removeFirst(); //значення
-                log.debug("write something");
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
                 String valueRead = reader.readLine();
 
@@ -282,8 +280,8 @@ public class PolizInterpreter {
     private static void бінарнийОператор(BiFunction<Float, Float, Float> action) {
         final Lexeme rightLexeme = stack.removeLast();
         final Lexeme leftLexeme = stack.removeLast();
-        System.out.println("rightLexeme:" + rightLexeme);
-        System.out.println("leftLexeme:" + leftLexeme);
+        //System.out.println("rightLexeme:" + rightLexeme);
+        //System.out.println("leftLexeme:" + leftLexeme);
 
         String rightVarValue = getVarValueAsString(rightLexeme);
         String leftVarValue = getVarValueAsString(leftLexeme);

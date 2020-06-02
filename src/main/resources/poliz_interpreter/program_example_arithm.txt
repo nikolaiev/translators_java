@@ -1,8 +1,0 @@
-Program Julia;
-var a:bool; c:float; z:string;
-{
-    out('Введіть значення a, c,z:');
-    in(a,c,z);
-    out('Значення с, a:');
-    out(c, a, z);
-}
