@@ -36,7 +36,38 @@ class PolizConverterTest {
 
     @Test
     void testIfStatementNested() throws IOException {
-        testPoliz("poliz/program_example_if_statement_nested.txt", "a,b,>,m0:,УПХ,a,5,=,m0:");
+        testPoliz("poliz/program_example_if_statement_nested.txt",
+            "a,b,>,m0:,УПХ,a,5,=,23,v,c,/,>,m1:,УПХ,b,2,1,+,=,m1:,m0:");
+    }
+
+    @Test
+    void testRepeatStatement() throws IOException {
+        testPoliz("poliz/program_example_loop.txt",
+            "m0:,a,a,1,+,=,a,b,>,m0:,УПХ");
+    }
+
+    @Test
+    void testRepeatStatementNested() throws IOException {
+        testPoliz("poliz/program_example_loop_nested.txt",
+            "m0:,a,12,=,m1:,a,b,c,+,=,b,c,1,-,>=,m1:,УПХ,a,b,<,m0:,УПХ");
+    }
+
+    @Test
+    void testReadStatement() throws IOException {
+        testPoliz("poliz/program_example_read.txt",
+            "a,b,c,in");
+    }
+
+    @Test
+    void testWriteStatement_Iden_List() throws IOException {
+        testPoliz("poliz/program_example_write_iden_list.txt",
+            "a,b,c,out");
+    }
+
+    @Test
+    void testWriteStatement_Expression() throws IOException {
+        testPoliz("poliz/program_example_write_expression.txt",
+            "a,b,+,out");
     }
 
     private void testPoliz(String fileName, String expectedPoliz) throws IOException {

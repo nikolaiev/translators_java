@@ -1,0 +1,7 @@
+Program Julia;
+var a:int; c:float;
+{
+    c=1.5;
+    a=1;
+    c=a*4^(2-2)/1.;
+}

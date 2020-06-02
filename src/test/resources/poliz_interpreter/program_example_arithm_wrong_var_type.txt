@@ -1,0 +1,7 @@
+program test;
+var a:int;
+{
+    in(a);
+    a=2/3+4*a;
+    write(a);
+}

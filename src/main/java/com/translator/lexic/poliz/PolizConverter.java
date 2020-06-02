@@ -15,8 +15,11 @@ public class PolizConverter {
     static HashMap<String, Integer> lexemePriorities = new HashMap<>() {{
         put("(", 0);
         put("if", 0);
-//        put(";", 0); //TODO think about it
+        put("repeat", 0);
+        put(";", 0);
         put(")", 1);
+        put("in", 1);
+        put("out", 1);
         put("then", 1);
         put("=", 2);
         put("||", 3);
@@ -40,7 +43,7 @@ public class PolizConverter {
         put("^", 9);
     }};
 
-
+    static HashMap<Lexeme, String> identifiersTypes = new HashMap<>();
     static Lexeme UNARY_MINUS = new Lexeme("@", LexemeType.KEYWORD);
     //БП - безумовний перехід
     static Lexeme GOTO = new Lexeme("БП", LexemeType.KEYWORD);
@@ -48,8 +51,14 @@ public class PolizConverter {
     static Lexeme GOTO_ON_FAIL = new Lexeme("УПХ", LexemeType.KEYWORD);
     static LinkedList<Lexeme> GOTOS = new LinkedList<>();
     static int gotoNumber = 0;
+    static boolean isInsideUntilCondition = false;
 
     public static LinkedList<Lexeme> getPoliz(LinkedList<Lexeme> polizLexemes) {
+        identifiersTypes = new HashMap<>();
+        GOTOS = new LinkedList<>();
+        gotoNumber = 0;
+        isInsideUntilCondition = false;
+
         LinkedHashMap<String, String> resultPoliz = new LinkedHashMap<>();
 
         LinkedList<Lexeme> exit = new LinkedList<Lexeme>();
@@ -57,6 +66,7 @@ public class PolizConverter {
         //remove whitespaces
         polizLexemes = polizLexemes
             .stream().filter(l -> l.getType() != LexemeType.WHITE).collect(Collectors.toCollection(LinkedList::new));
+
         //we need to check prev lexeme for унарний мінус
         Lexeme previousLexeme = null;
         while (!polizLexemes.isEmpty()) {
@@ -67,12 +77,39 @@ public class PolizConverter {
             System.out.println("InputLexeme:" + lexeme);
 
             LexemeType type = lexeme.getType();
-            String lexemeValue = lexeme.getValue();
 
-            if (lexemeValue.equals("}") || lexemeValue.equals("{") || lexemeValue.equals(";")) {
+            //создаем список идентификаторов
+            if (lexeme.getValue().equals("var")) {
+                exit.clear();
+                lexeme = polizLexemes.removeFirst();
+                do {//end of var statement
+                    if (!":".equals(lexeme.getValue())) {
+                        if (!",".equals(lexeme.getValue())) {
+                            stack.add(lexeme);
+                        }
+                    } else {
+                        lexeme = polizLexemes.removeFirst();//skip ":" and take type declaration
+                        for (Lexeme lexemeIdentifier : stack) {
+                            identifiersTypes.put(lexemeIdentifier, lexeme.getValue());
+                        }
+                        stack.clear();
+                    }
+                    lexeme = polizLexemes.removeFirst();
+                } while (!"{".equals(lexeme.getValue()));
+            } else if (lexeme.getValue().equals(";") && isInsideUntilCondition) {//так как надо после until ставить УПХ и метку - приходится немного изощряться, добавляя логику на ";"
+                isInsideUntilCondition = false;
+                while (true) {
+                    Lexeme lastOnStack = stack.removeLast();
+                    if (lastOnStack.getValue().equals("repeat")) {
+                        exit.add(GOTO_ON_FAIL);
+                        break;
+                    }
+                    exit.add(lastOnStack);
+                }
+            } else if (lexeme.getValue().equals("}") || lexeme.getValue().equals("{") || lexeme.getValue().equals(",")) {
                 //noop
                 //skip this symbols for poliz
-            } else if (lexemeValue.equals("-")) {//unary minus
+            } else if (lexeme.getValue().equals("-")) {//unary minus
                 //previousLexeme can be null
                 LexemeType previousLexemeType = previousLexeme != null ? previousLexeme.getType() : null;
                 String previousLexemeValue = previousLexeme != null ? previousLexeme.getValue() : null;
@@ -83,19 +120,18 @@ public class PolizConverter {
                 } else {
                     processInputTokenWithPriority(exit, stack, lexeme);
                 }
-            } else if (lexemeValue.equals("(")) {
+            } else if (lexeme.getValue().equals("(")) {
                 stack.add(lexeme);
 
-            } else if (lexemeValue.equals(")")) {
+            } else if (lexeme.getValue().equals(")")) {
                 while (true) {
                     Lexeme lastOnStack = stack.removeLast();
                     if (lastOnStack.getValue().equals("(")) break;
                     exit.add(lastOnStack);
                 }
-            } else if (lexemeValue.equals("if")) { //IF Statement
+            } else if (lexeme.getValue().equals("if")) { //IF Statement
                 stack.add(lexeme);
-
-            } else if (lexemeValue.equals("then")) {
+            } else if (lexeme.getValue().equals("then")) {
                 while (true) {
                     Lexeme lastOnStack = stack.getLast();
                     if (lastOnStack.getValue().equals("if")) {
@@ -114,13 +150,35 @@ public class PolizConverter {
                     stack.removeLast();
                     exit.add(lastOnStack);
                 }
-            } else if (lexemeValue.equals("fi")) {
+            } else if (lexeme.getValue().equals("fi")) {
                 while (true) {
                     Lexeme lastOnStack = stack.removeLast();
                     if (lastOnStack.getValue().equals("if")) {
+                        GOTOS.removeLast();
                         //exit.add(GOTOS.removeLast());
                         break;
                     }
+                    exit.add(lastOnStack);
+                }
+            } else if (lexeme.getValue().equals("repeat")) {//REPEAT UNTIL STATEMENT
+                String _goto = "m" + gotoNumber + ":";
+                gotoNumber++;
+                //mi УПХ
+                final Lexeme _gotoLexeme = new Lexeme(_goto, LexemeType.KEYWORD);
+                GOTOS.add(_gotoLexeme);
+                stack.add(lexeme);
+                stack.add(_gotoLexeme);
+                exit.add(_gotoLexeme);
+            } else if (lexeme.getValue().equals("until")) {
+                isInsideUntilCondition = true; //для дальнецшого УПХ после BoolExpr
+                while (true) {
+                    Lexeme lastOnStack = stack.getLast();
+                    if (lastOnStack.equals(GOTOS.getLast())) {
+                        GOTOS.removeLast();
+                        //exit.add(GOTOS.removeLast());
+                        break;
+                    }
+                    stack.removeLast();
                     exit.add(lastOnStack);
                 }
             } else if (type == LexemeType.IDENTIFIER
@@ -140,7 +198,8 @@ public class PolizConverter {
         System.out.println("Exit:" + formatExit(exit));
         System.out.println("Stack:" + formatExit(stack));
 
-        return exit;
+        //simply remove ; from POLIZ. Just did not want to polute code with ; exclusion
+        return exit.stream().filter(lexeme -> !lexeme.getValue().equals(";")).collect(Collectors.toCollection(LinkedList::new));
     }
 
     //пункт 2 алгоритму Дейкстри
@@ -174,7 +233,7 @@ public class PolizConverter {
     }
 
     private static String formatExit(LinkedList<Lexeme> exit) {
-        return exit.stream().map(Lexeme::getValue)
+        return exit.stream().map(Lexeme::getValue).filter(l->!l.equals(";"))
             .collect(Collectors.joining(","));
     }
 
