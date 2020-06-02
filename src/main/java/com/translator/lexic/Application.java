@@ -6,20 +6,13 @@ import com.translator.lexic.poliz.PolizConverter;
 import com.translator.lexic.poliz.PolizInterpreter;
 import com.translator.lexic.syntax.descending.analyzer.SyntaxTreeAnalyzer;
 import com.translator.lexic.syntax.magazine.MagazineAutomaton;
-import com.translator.lexic.util.Utils;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
@@ -30,7 +23,7 @@ import static java.lang.String.format;
 public class Application {
 
     public static void main(String[] args) throws IOException {
-        String programCode = getFileContentAsString("poliz_interpreter/program_example_arithm.txt");
+        String programCode = getFileContentAsString("program_example.txt");
 
         System.out.println("Enter 1 to use Antrl for lexical analize; Otherwise - standard.\n");
         int key = 1;// getKey();
