@@ -5,7 +5,7 @@ var a:int;
         a=a;
         a=(a+2)*1.2;
         repeat{
-                a=a;
+                a=-a;
                 a=a+2*(-a+b);
             } until(true && false || (a<=(5-2)))
     } until(false);

@@ -2,6 +2,7 @@ package com.translator.lexic;
 
 import com.translator.lexic.lexeme.analyzer.state.LexemeAnalyzer;
 import com.translator.lexic.lexeme.model.Lexeme;
+import com.translator.lexic.poliz.PolizConverter;
 import com.translator.lexic.syntax.descending.analyzer.SyntaxTreeAnalyzer;
 import com.translator.lexic.syntax.magazine.MagazineAutomaton;
 import org.antlr.v4.runtime.CharStreams;
@@ -17,6 +18,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -25,22 +29,31 @@ import static java.lang.String.format;
 public class Application {
 
     public static void main(String[] args) throws IOException {
-        String programCode = getFileContentAsString("program_example_2.txt");
+        String programCode = getFileContentAsString("poliz/program_example_1.txt");
 
         System.out.println("Enter 1 to use Antrl for lexical analize; Otherwise - standard.\n");
         int key = 1;// getKey();
         //LEXEME ANALYZER
         //if (key == 1) {
-            antrl4LexemeAnalyzer(programCode);
+        //   antrl4LexemeAnalyzer(programCode);
         //} else {
-            LexemeAnalyzer lexemeAnalyzer = simpleLexemeAnalyzer(programCode);
-            printLexemeAnalyzerResult(lexemeAnalyzer);
+        LexemeAnalyzer lexemeAnalyzer = simpleLexemeAnalyzer(programCode);
+        printLexemeAnalyzerResult(lexemeAnalyzer);
         //}
 
         //SYNTAX ANALYZER
-        antrl4SyntaxAnalyzer(programCode);
-        magazineSyntaxAnalyzer(lexemeAnalyzer);
+        //antrl4SyntaxAnalyzer(programCode);
+        LinkedList<Lexeme> resultProgramCodeLexemes = lexemeAnalyzer.getResultProgramCodeLexemes();
+        //TODO uncomment
+        //magazineSyntaxAnalyzer(resultProgramCodeLexemes);
         //treeSyntaxAnalyzer(lexemeAnalyzer);
+        poliz(resultProgramCodeLexemes);
+
+    }
+
+    private static void poliz(LinkedList<Lexeme> resultProgramCodeLexemes) {
+        //TODO format to poliz and show
+        HashMap<String, String> poliz = PolizConverter.getPoliz(resultProgramCodeLexemes);
     }
 
     private static void antrl4LexemeAnalyzer(String programCode) {
@@ -48,7 +61,7 @@ public class Application {
 
         Token token = lexer.nextToken();
         while (token.getType() != HelloLexer.EOF) {
-            System.out.println("\t" + token.getType() +"\t" + HelloLexer.ruleNames[token.getType()-1]+ "\t\t" + token.getText());
+            System.out.println("\t" + token.getType() + "\t" + HelloLexer.ruleNames[token.getType() - 1] + "\t\t" + token.getText());
             token = lexer.nextToken();
         }
     }
@@ -80,8 +93,8 @@ public class Application {
         syntaxTreeAnalyzer.analyze();
     }
 
-    private static void magazineSyntaxAnalyzer(LexemeAnalyzer lexemeAnalyzer) {
-        MagazineAutomaton magazineAutomaton = new MagazineAutomaton(lexemeAnalyzer.getResultProgramCodeLexemes());
+    private static void magazineSyntaxAnalyzer(LinkedList<Lexeme> lexemes) {
+        MagazineAutomaton magazineAutomaton = new MagazineAutomaton(lexemes);
         magazineAutomaton.analyze();
         if (magazineAutomaton.getWarnings().isEmpty()) {
             //перевіряємо пустоту стека
