@@ -68,10 +68,19 @@ public class PolizInterpreter {
                     final Lexeme nextLexeme = polizLexemes.get(step + 1);
                     if (nextLexeme.getValue().equals("УПХ")) {//else noop
                         final Lexeme boolLexeme = stack.removeLast();
+                        String value;
                         if (boolLexeme.getType() != LexemeType.BOOL) {
-                            throw new RuntimeException("Something wrong with УПХ");
+                            //log.info("{}",boolLexeme);
+                            if(boolLexeme.getType() == LexemeType.IDENTIFIER){
+                                value=String.valueOf(identifiersValues.get(boolLexeme));
+                            }else {
+                                throw new RuntimeException("Something wrong with УПХ");
+                            }
+                        }else {
+                             value = boolLexeme.getValue();
                         }
-                        final boolean condition = Boolean.parseBoolean(boolLexeme.getValue());
+
+                        final boolean condition = Boolean.parseBoolean(value);
                         if (!condition) { //УПХ - умова переходу на ХИБУ
                             step = searchStepForGoto(polizLexemes, _gotoName, step);
                         }// else noop
