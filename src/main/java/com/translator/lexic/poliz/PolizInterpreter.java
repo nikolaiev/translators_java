@@ -255,14 +255,7 @@ public class PolizInterpreter {
 
     private static String getValueType(Lexeme value, Lexeme identifier, String identifierType) {
         //determine valueType
-        String valueType = identifiersAndNumericLexemTypes.get(value);
-        if (valueType == null && value.getType() == LexemeType.STRING) {
-            valueType = "string";
-        } else if (valueType == null && value.getType() == LexemeType.BOOL) {
-            valueType = "bool";
-        } else if (valueType == null && value.getType() == LexemeType.NUMBER) {
-            valueType = value.getValue().matches(FLOAT_REGEX) ? "float" : "int";
-        }
+        String valueType = getLexemeValueType(value);
 
         if (valueType.equals("bool") && !identifierType.equals("bool")) {
             throw new RuntimeException("Illegal operation. Can only assign bool to bool type var. Error at: " + identifier);
@@ -276,6 +269,18 @@ public class PolizInterpreter {
         return valueType;
     }
 
+    private static String getLexemeValueType(Lexeme value) {
+        String valueType = identifiersAndNumericLexemTypes.get(value);
+        if (valueType == null && value.getType() == LexemeType.STRING) {
+            valueType = "string";
+        } else if (valueType == null && value.getType() == LexemeType.BOOL) {
+            valueType = "bool";
+        } else if (valueType == null && value.getType() == LexemeType.NUMBER) {
+            valueType = value.getValue().matches(FLOAT_REGEX) ? "float" : "int";
+        }
+        return valueType;
+    }
+
     private static void бінарнийОператор(BiFunction<Float, Float, Float> action) {
         final Lexeme rightLexeme = stack.removeLast();
         final Lexeme leftLexeme = stack.removeLast();
@@ -285,8 +290,9 @@ public class PolizInterpreter {
         String rightVarValue = getVarValueAsString(rightLexeme);
         String leftVarValue = getVarValueAsString(leftLexeme);
 
-        String rightVarType = identifiersAndNumericLexemTypes.get(rightLexeme);
-        String leftVarType = identifiersAndNumericLexemTypes.get(leftLexeme);
+        String rightVarType = getLexemeValueType(rightLexeme);
+        String leftVarType = getLexemeValueType(leftLexeme);
+
         String resulType = !"float".equals(leftVarType) && !"float".equals(rightVarType) ? "int" : "float";
 
         float result = action.apply(parseFloat(leftVarValue), parseFloat(rightVarValue));
@@ -299,7 +305,7 @@ public class PolizInterpreter {
     private static void унарнийМінус() {
         Lexeme stackTopLexem = stack.removeLast();
         String varValue = getVarValueAsString(stackTopLexem);
-        String type = identifiersAndNumericLexemTypes.get(stackTopLexem);
+        String type = getLexemeValueType(stackTopLexem);
         float initialValue = parseFloat(varValue);
 
         Lexeme result = Lexeme.of(String.valueOf(-initialValue), LexemeType.NUMBER);
