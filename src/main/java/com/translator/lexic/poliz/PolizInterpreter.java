@@ -175,7 +175,7 @@ public class PolizInterpreter {
                 if (valueStr == null) {
                     throw new RuntimeException("Trying to print uninitialized var: " + valueStr);
                 }
-                //System.out.println(valueStr);
+                System.out.println(valueStr);
             } else {
                 //костиль, так як лексема строки додається з кавичками ' .ТОДО
                 System.out.println(value.getValue().replaceAll("'", ""));

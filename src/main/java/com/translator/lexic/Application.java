@@ -46,8 +46,8 @@ public class Application {
     }
 
     private static void poliz(LinkedList<Lexeme> resultProgramCodeLexemes) {
-        //TODO show something
         LinkedList<Lexeme> poliz = PolizConverter.getPoliz(resultProgramCodeLexemes);
+        System.out.println("-----------------");
         PolizInterpreter.interpret(poliz);
     }
 
